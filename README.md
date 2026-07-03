@@ -62,12 +62,22 @@ docker compose up -d
 | Prometheus | http://localhost:9090 | — |
 | Alertmanager | http://localhost:9093 | — |
 
-**Home dashboard:** CCDL ERP Overview — server health table (Alive / Docker / Nginx), Patroni cluster status, Postgres summary.
+**Home dashboard:** CCDL ERP Overview — server health, Odoo req/s, Patroni leader/replica, lag and timeline graphs.
 
 **Drill-down dashboards** (folder: Server health internal):
 
 - Patroni Odoo (CCDL)
 - Postgres Odoo (CCDL)
+
+### Odoo request rate (nginx exporter)
+
+The **Odoo Application Req/s** panel reads from the `nginx` Prometheus job (`:9113` on Live and Backup). Install [nginx-prometheus-exporter](https://github.com/nginxinc/nginx-prometheus-exporter) on those servers pointing at nginx stub_status, then reload Prometheus:
+
+```bash
+docker compose restart prometheus
+```
+
+Until the exporter is running, that panel may show **No data** (nginx systemd status in the server table is separate).
 
 ## Project layout
 
@@ -112,10 +122,11 @@ Copied from the MIME monitoring project with email **enabled**:
 
 | Issue | Check |
 |-------|-------|
-| Targets DOWN | Firewall allows `9100`, `5000`, `8008` from Docker host to server IPs |
+| Targets DOWN | Firewall allows `9100`, `5000`, `8008`, `9113` from Docker host to server IPs |
 | Postgres exporter auth failed | Verify `odoo` / `123456` on port `5000` |
 | Docker/Nginx shows N/A (gray) | Service not installed on that host (expected on Observatory) |
 | pg_stat_statements panels empty | Run `enable_pg_stat_statements.sh`; confirm `shared_preload_libraries` |
+| Odoo Req/s shows No data | Install nginx-prometheus-exporter on Live/Backup (`:9113`) |
 | No alert emails | Confirm SMTP credentials in `alertmanager/alertmanager.yml`; check Alertmanager UI |
 
 ## Security note

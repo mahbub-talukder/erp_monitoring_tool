@@ -9,7 +9,6 @@
         },
         "enable": true,
         "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
         "type": "dashboard"
       }
@@ -17,7 +16,7 @@
   },
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "graphTooltip": 0,
+  "graphTooltip": 1,
   "links": [
     {
       "title": "Patroni Odoo (detail)",
@@ -34,6 +33,19 @@
   ],
   "panels": [
     {
+      "id": 100,
+      "type": "row",
+      "title": "Infrastructure",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "collapsed": false,
+      "panels": []
+    },
+    {
       "id": 1,
       "type": "table",
       "title": "Server Health Status",
@@ -42,10 +54,10 @@
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 12,
-        "w": 24,
+        "h": 10,
+        "w": 14,
         "x": 0,
-        "y": 0
+        "y": 1
       },
       "targets": [
         {
@@ -86,43 +98,7 @@
         },
         {
           "refId": "G",
-          "expr": "sum by (server,host,instance) (rate(node_disk_read_bytes_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", device!~\"loop.*|ram.*\"}[5m]))",
-          "format": "table",
-          "instant": true
-        },
-        {
-          "refId": "H",
-          "expr": "sum by (server,host,instance) (rate(node_disk_written_bytes_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", device!~\"loop.*|ram.*\"}[5m]))",
-          "format": "table",
-          "instant": true
-        },
-        {
-          "refId": "I",
-          "expr": "100 * (1 - (node_memory_SwapFree_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\"} / node_memory_SwapTotal_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\"}))",
-          "format": "table",
-          "instant": true
-        },
-        {
-          "refId": "J",
           "expr": "node_time_seconds{job=\"node\", server=~\"$server\", instance=~\"$instance\"} - node_boot_time_seconds{job=\"node\", server=~\"$server\", instance=~\"$instance\"}",
-          "format": "table",
-          "instant": true
-        },
-        {
-          "refId": "K",
-          "expr": "100 * node_load1{job=\"node\", server=~\"$server\", instance=~\"$instance\"} / (count by (server,host,instance) (node_cpu_seconds_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", mode=\"idle\"}))",
-          "format": "table",
-          "instant": true
-        },
-        {
-          "refId": "L",
-          "expr": "100 * node_load5{job=\"node\", server=~\"$server\", instance=~\"$instance\"} / (count by (server,host,instance) (node_cpu_seconds_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", mode=\"idle\"}))",
-          "format": "table",
-          "instant": true
-        },
-        {
-          "refId": "M",
-          "expr": "100 * node_load15{job=\"node\", server=~\"$server\", instance=~\"$instance\"} / (count by (server,host,instance) (node_cpu_seconds_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", mode=\"idle\"}))",
           "format": "table",
           "instant": true
         }
@@ -131,15 +107,8 @@
         "showHeader": true,
         "cellHeight": "md",
         "footer": {
-          "show": false,
-          "reducer": [
-            "sum"
-          ],
-          "fields": ""
-        },
-        "frozenColumns": 4,
-        "frozenColumnsCount": 4,
-        "frozenColumnsLeft": 4
+          "show": false
+        }
       },
       "transformations": [
         {
@@ -159,6 +128,7 @@
               "Time": true
             },
             "renameByName": {
+              "server": "Server",
               "host": "Host",
               "instance": "Instance",
               "Value #A": "Server Alive",
@@ -167,14 +137,7 @@
               "Value #D": "CPU usage (%)",
               "Value #E": "RAM usage (%)",
               "Value #F": "Disk used/total (%)",
-              "Value #G": "Disk Read",
-              "Value #H": "Disk Write",
-              "Value #I": "Swap usage (%)",
-              "Value #J": "Uptime",
-              "Value #K": "Load 1m (%)",
-              "Value #L": "Load 5m (%)",
-              "Value #M": "Load 15m (%)",
-              "server": "Server"
+              "Value #G": "Uptime"
             },
             "indexByName": {
               "Server": 0,
@@ -186,13 +149,7 @@
               "CPU usage (%)": 6,
               "RAM usage (%)": 7,
               "Disk used/total (%)": 8,
-              "Disk Read": 9,
-              "Disk Write": 10,
-              "Swap usage (%)": 11,
-              "Uptime": 12,
-              "Load 1m (%)": 13,
-              "Load 5m (%)": 14,
-              "Load 15m (%)": 15
+              "Uptime": 9
             }
           }
         },
@@ -245,50 +202,11 @@
                   "lastNotNull"
                 ]
               },
-              "Disk Read": {
-                "operation": "aggregate",
-                "aggregations": [
-                  "lastNotNull"
-                ]
-              },
-              "Disk Write": {
-                "operation": "aggregate",
-                "aggregations": [
-                  "lastNotNull"
-                ]
-              },
-              "Swap usage (%)": {
-                "operation": "aggregate",
-                "aggregations": [
-                  "lastNotNull"
-                ]
-              },
               "Uptime": {
                 "operation": "aggregate",
                 "aggregations": [
                   "lastNotNull"
                 ]
-              },
-              "Load 1m (%)": {
-                "operation": "aggregate",
-                "aggregations": [
-                  "lastNotNull"
-                ]
-              },
-              "Load 5m (%)": {
-                "operation": "aggregate",
-                "aggregations": [
-                  "lastNotNull"
-                ]
-              },
-              "Load 15m (%)": {
-                "operation": "aggregate",
-                "aggregations": [
-                  "lastNotNull"
-                ]
-              },
-              "Server": {
-                "operation": "groupby"
               }
             }
           }
@@ -301,37 +219,12 @@
             },
             "renameByName": {
               "Server Alive (lastNotNull)": "Server Alive",
+              "Docker status (lastNotNull)": "Docker status",
+              "Nginx status (lastNotNull)": "Nginx status",
               "CPU usage (%) (lastNotNull)": "CPU usage (%)",
               "RAM usage (%) (lastNotNull)": "RAM usage (%)",
               "Disk used/total (%) (lastNotNull)": "Disk used/total (%)",
-              "Disk Read (lastNotNull)": "Disk Read",
-              "Disk Write (lastNotNull)": "Disk Write",
-              "Swap usage (%) (lastNotNull)": "Swap usage (%)",
-              "Uptime (lastNotNull)": "Uptime",
-              "Load 1m (%) (lastNotNull)": "Load 1m (%)",
-              "Load 5m (%) (lastNotNull)": "Load 5m (%)",
-              "Load 15m (%) (lastNotNull)": "Load 15m (%)",
-              "Docker status (lastNotNull)": "Docker status",
-              "Nginx status (lastNotNull)": "Nginx status"
-            },
-            "indexByName": {
-              "Server": 0,
-              "Role": 1,
-              "Host": 2,
-              "Instance": 3,
-              "Server Alive": 4,
-              "Docker status": 5,
-              "Nginx status": 6,
-              "CPU usage (%)": 7,
-              "RAM usage (%)": 8,
-              "Disk used/total (%)": 9,
-              "Disk Read": 10,
-              "Disk Write": 11,
-              "Swap usage (%)": 12,
-              "Uptime": 13,
-              "Load 1m (%)": 14,
-              "Load 5m (%)": 15,
-              "Load 15m (%)": 16
+              "Uptime (lastNotNull)": "Uptime"
             }
           }
         }
@@ -343,9 +236,21 @@
               "type": "auto"
             }
           },
-          "decimals": 2
+          "decimals": 1
         },
         "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Server"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
           {
             "matcher": {
               "id": "byName",
@@ -354,27 +259,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 220
-              },
-              {
-                "id": "custom.width",
-                "value": 220
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "data-links"
-                }
-              },
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "${__value.text}",
-                    "url": "/d/sh-role-${__data.fields.Role}/server-health-role?orgId=1",
-                    "targetBlank": true
-                  }
-                ]
+                "value": 200
               }
             ]
           },
@@ -382,44 +267,6 @@
             "matcher": {
               "id": "byName",
               "options": "Instance"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 125
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "regex",
-                    "options": {
-                      "pattern": "^([^:]+):.*$",
-                      "result": {
-                        "text": "$1"
-                      }
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Server"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 95
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Server"
             },
             "properties": [
               {
@@ -451,11 +298,11 @@
                     "type": "value",
                     "options": {
                       "0": {
-                        "text": "\ud83d\udd34 Down",
+                        "text": "Down",
                         "color": "red"
                       },
                       "1": {
-                        "text": "\ud83d\udfe2 Up",
+                        "text": "Up",
                         "color": "green"
                       }
                     }
@@ -468,11 +315,131 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "value": 0,
+                      "value": 0.0,
                       "color": "red"
                     },
                     {
-                      "value": 1,
+                      "value": 1.0,
+                      "color": "green"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Docker status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "-1": {
+                        "text": "N/A",
+                        "color": "gray"
+                      },
+                      "0": {
+                        "text": "Inactive",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Active",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": -1.0,
+                      "color": "gray"
+                    },
+                    {
+                      "value": 0.0,
+                      "color": "red"
+                    },
+                    {
+                      "value": 1.0,
+                      "color": "green"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nginx status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "-1": {
+                        "text": "N/A",
+                        "color": "gray"
+                      },
+                      "0": {
+                        "text": "Inactive",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Active",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": -1.0,
+                      "color": "gray"
+                    },
+                    {
+                      "value": 0.0,
+                      "color": "red"
+                    },
+                    {
+                      "value": 1.0,
                       "color": "green"
                     }
                   ]
@@ -492,7 +459,14 @@
               },
               {
                 "id": "custom.width",
-                "value": 140
+                "value": 130
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
               },
               {
                 "id": "min",
@@ -501,17 +475,6 @@
               {
                 "id": "max",
                 "value": 100
-              },
-              {
-                "id": "decimals",
-                "value": 1
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "gauge",
-                  "mode": "gradient"
-                }
               },
               {
                 "id": "thresholds",
@@ -547,7 +510,14 @@
               },
               {
                 "id": "custom.width",
-                "value": 140
+                "value": 130
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
               },
               {
                 "id": "min",
@@ -556,17 +526,6 @@
               {
                 "id": "max",
                 "value": 100
-              },
-              {
-                "id": "decimals",
-                "value": 1
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "gauge",
-                  "mode": "gradient"
-                }
               },
               {
                 "id": "thresholds",
@@ -578,7 +537,7 @@
                       "color": "green"
                     },
                     {
-                      "value": 75,
+                      "value": 70,
                       "color": "yellow"
                     },
                     {
@@ -602,19 +561,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 140
-              },
-              {
-                "id": "min",
-                "value": 0
-              },
-              {
-                "id": "max",
-                "value": 100
-              },
-              {
-                "id": "decimals",
-                "value": 1
+                "value": 130
               },
               {
                 "id": "custom.cellOptions",
@@ -624,59 +571,12 @@
                 }
               },
               {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "value": 0,
-                      "color": "green"
-                    },
-                    {
-                      "value": 80,
-                      "color": "yellow"
-                    },
-                    {
-                      "value": 90,
-                      "color": "red"
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Load 1m (%)"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "percent"
-              },
-              {
-                "id": "custom.width",
-                "value": 140
-              },
-              {
                 "id": "min",
                 "value": 0
               },
               {
                 "id": "max",
                 "value": 100
-              },
-              {
-                "id": "decimals",
-                "value": 1
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "gauge",
-                  "mode": "gradient"
-                }
               },
               {
                 "id": "thresholds",
@@ -692,208 +592,11 @@
                       "color": "yellow"
                     },
                     {
-                      "value": 100,
+                      "value": 85,
                       "color": "red"
                     }
                   ]
                 }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Load 5m (%)"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "percent"
-              },
-              {
-                "id": "custom.width",
-                "value": 140
-              },
-              {
-                "id": "min",
-                "value": 0
-              },
-              {
-                "id": "max",
-                "value": 100
-              },
-              {
-                "id": "decimals",
-                "value": 1
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "gauge",
-                  "mode": "gradient"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "value": 0,
-                      "color": "green"
-                    },
-                    {
-                      "value": 70,
-                      "color": "yellow"
-                    },
-                    {
-                      "value": 100,
-                      "color": "red"
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Load 15m (%)"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "percent"
-              },
-              {
-                "id": "custom.width",
-                "value": 140
-              },
-              {
-                "id": "min",
-                "value": 0
-              },
-              {
-                "id": "max",
-                "value": 100
-              },
-              {
-                "id": "decimals",
-                "value": 1
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "gauge",
-                  "mode": "gradient"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "value": 0,
-                      "color": "green"
-                    },
-                    {
-                      "value": 70,
-                      "color": "yellow"
-                    },
-                    {
-                      "value": 100,
-                      "color": "red"
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Swap usage (%)"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "percent"
-              },
-              {
-                "id": "custom.width",
-                "value": 140
-              },
-              {
-                "id": "min",
-                "value": 0
-              },
-              {
-                "id": "max",
-                "value": 100
-              },
-              {
-                "id": "decimals",
-                "value": 1
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "gauge",
-                  "mode": "gradient"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "value": 0,
-                      "color": "green"
-                    },
-                    {
-                      "value": 50,
-                      "color": "yellow"
-                    },
-                    {
-                      "value": 80,
-                      "color": "red"
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Disk Read"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "Bps"
-              },
-              {
-                "id": "custom.width",
-                "value": 120
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Disk Write"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "Bps"
-              },
-              {
-                "id": "custom.width",
-                "value": 120
               }
             ]
           },
@@ -910,130 +613,6 @@
               {
                 "id": "decimals",
                 "value": 0
-              },
-              {
-                "id": "custom.width",
-                "value": 140
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Docker status"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 130
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background"
-                }
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "value",
-                    "options": {
-                      "-1": {
-                        "text": "\u26aa N/A",
-                        "color": "gray"
-                      },
-                      "0": {
-                        "text": "\ud83d\udd34 Inactive",
-                        "color": "red"
-                      },
-                      "1": {
-                        "text": "\ud83d\udfe2 Active",
-                        "color": "green"
-                      }
-                    }
-                  }
-                ]
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "value": -1,
-                      "color": "gray"
-                    },
-                    {
-                      "value": 0,
-                      "color": "red"
-                    },
-                    {
-                      "value": 1,
-                      "color": "green"
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Nginx status"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 130
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background"
-                }
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "value",
-                    "options": {
-                      "-1": {
-                        "text": "\u26aa N/A",
-                        "color": "gray"
-                      },
-                      "0": {
-                        "text": "\ud83d\udd34 Inactive",
-                        "color": "red"
-                      },
-                      "1": {
-                        "text": "\ud83d\udfe2 Active",
-                        "color": "green"
-                      }
-                    }
-                  }
-                ]
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "value": -1,
-                      "color": "gray"
-                    },
-                    {
-                      "value": 0,
-                      "color": "red"
-                    },
-                    {
-                      "value": 1,
-                      "color": "green"
-                    }
-                  ]
-                }
               }
             ]
           }
@@ -1041,34 +620,166 @@
       }
     },
     {
-      "id": 2,
-      "type": "table",
-      "title": "Patroni Odoo Cluster",
+      "id": 20,
+      "type": "stat",
+      "title": "Odoo Application Req/s",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 0,
-        "y": 12
+        "h": 4,
+        "w": 10,
+        "x": 14,
+        "y": 1
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "service_health_key",
+          "expr": "sum(rate(nginx_http_requests_total{job=\"nginx\", server=~\"live|backup\"}[5m])) or sum(rate(nginx_connections_accepted{job=\"nginx\", server=~\"live|backup\"}[5m]))",
+          "legendFormat": "{{server}}",
+          "range": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "blue"
+              },
+              {
+                "value": 0,
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "reqps",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "area"
+      }
+    },
+    {
+      "id": 21,
+      "type": "stat",
+      "title": "Patroni Odoo Nodes",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 10,
+        "x": 14,
+        "y": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum(patroni_postgres_running{job=\"patroni_odoo\"}) or on() vector(0)) * 100 + 2",
+          "legendFormat": "{{server}}",
+          "range": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "202": {
+                  "text": "2/2",
+                  "color": "green"
+                },
+                "102": {
+                  "text": "1/2",
+                  "color": "red"
+                },
+                "2": {
+                  "text": "0/2",
+                  "color": "red"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "red"
+              },
+              {
+                "value": 202,
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "none",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 22,
+      "type": "table",
+      "title": "Patroni Leader / Replica",
+      "description": "Current PostgreSQL cluster role per node",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 10,
+        "x": 14,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "patroni_primary{job=\"patroni_odoo\"} or patroni_master{job=\"patroni_odoo\"}",
           "format": "table",
           "instant": true
         }
       ],
-      "options": {
-        "showHeader": true,
-        "cellHeight": "md",
-        "footer": {
-          "show": false
-        }
-      },
       "transformations": [
         {
           "id": "labelsToFields",
@@ -1077,81 +788,39 @@
           }
         },
         {
-          "id": "sortBy",
-          "options": {
-            "fields": {},
-            "sort": [
-              {
-                "field": "sort",
-                "desc": false
-              }
-            ]
-          }
-        },
-        {
           "id": "organize",
           "options": {
             "excludeByName": {
               "Time": true,
-              "sort": true,
-              "__name__": true
+              "__name__": true,
+              "job": true,
+              "instance": true,
+              "scope": true
             },
             "renameByName": {
-              "service": "Service",
-              "Value": "Current up node",
-              "Value #A": "Current up node",
-              "service_health_key": "Current up node"
+              "server": "Server",
+              "host": "Host",
+              "name": "Patroni name",
+              "Value": "Role"
             },
             "indexByName": {
-              "Service": 0,
-              "Current up node": 1
+              "Server": 0,
+              "Host": 1,
+              "Patroni name": 2,
+              "Role": 3
             }
           }
         }
       ],
       "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
+        "defaults": {},
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "Service"
+              "options": "Role"
             },
             "properties": [
-              {
-                "id": "custom.width",
-                "value": 200
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Current up node"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 160
-              },
               {
                 "id": "custom.cellOptions",
                 "value": {
@@ -1164,48 +833,60 @@
                   {
                     "type": "value",
                     "options": {
-                      "202": {
-                        "text": "2/2",
+                      "0": {
+                        "text": "REPLICA",
+                        "color": "blue"
+                      },
+                      "1": {
+                        "text": "LEADER",
                         "color": "green"
-                      },
-                      "102": {
-                        "text": "1/2",
-                        "color": "red"
-                      },
-                      "2": {
-                        "text": "0/2",
-                        "color": "red"
                       }
                     }
                   }
                 ]
               },
               {
-                "id": "decimals",
-                "value": 0
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "blue"
+                    },
+                    {
+                      "value": 1,
+                      "color": "green"
+                    }
+                  ]
+                }
               }
             ]
           }
         ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "lg"
       }
     },
     {
-      "id": 3,
+      "id": 101,
       "type": "row",
-      "title": "Postgres Odoo Summary",
+      "title": "Patroni Odoo Cluster",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 11
       },
       "collapsed": false,
       "panels": []
     },
     {
-      "id": 4,
+      "id": 30,
       "type": "stat",
-      "title": "Live \u2014 Connections",
+      "title": "Postgres Running",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
@@ -1214,34 +895,58 @@
         "h": 4,
         "w": 6,
         "x": 0,
-        "y": 37
+        "y": 12
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(pg_stat_database_numbackends{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\", datname!~\"template0|template1\"})"
+          "expr": "sum(patroni_postgres_running{job=\"patroni_odoo\"})",
+          "legendFormat": "{{server}}",
+          "range": true
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
-        }
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "red"
+              },
+              {
+                "value": 2,
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "none",
+          "decimals": 0
+        },
+        "overrides": []
       },
       "options": {
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
-          ]
+          ],
+          "fields": "",
+          "values": false
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value"
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none"
       }
     },
     {
-      "id": 5,
+      "id": 31,
       "type": "stat",
-      "title": "Backup \u2014 Connections",
+      "title": "Streaming Replicas",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
@@ -1250,34 +955,58 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 37
+        "y": 12
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(pg_stat_database_numbackends{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\", datname!~\"template0|template1\"})"
+          "expr": "sum(patroni_postgres_streaming{job=\"patroni_odoo\"})",
+          "legendFormat": "{{server}}",
+          "range": true
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
-        }
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "red"
+              },
+              {
+                "value": 1,
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "none",
+          "decimals": 0
+        },
+        "overrides": []
       },
       "options": {
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
-          ]
+          ],
+          "fields": "",
+          "values": false
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value"
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none"
       }
     },
     {
-      "id": 6,
+      "id": 32,
       "type": "stat",
-      "title": "Live \u2014 Replica lag (bytes)",
+      "title": "Timeline Spread",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
@@ -1286,34 +1015,62 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 37
+        "y": 12
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "max(pg_replica_lag_bytes{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\"})"
+          "expr": "max(patroni_postgres_timeline{job=\"patroni_odoo\"}) - min(patroni_postgres_timeline{job=\"patroni_odoo\"})",
+          "legendFormat": "{{server}}",
+          "range": true
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes"
-        }
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "green"
+              },
+              {
+                "value": 1,
+                "color": "orange"
+              },
+              {
+                "value": 2,
+                "color": "red"
+              }
+            ]
+          },
+          "unit": "none",
+          "decimals": 0
+        },
+        "overrides": []
       },
       "options": {
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
-          ]
+          ],
+          "fields": "",
+          "values": false
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value"
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none"
       }
     },
     {
-      "id": 7,
-      "type": "stat",
-      "title": "Backup \u2014 Replica lag (bytes)",
+      "id": 33,
+      "type": "gauge",
+      "title": "Max Replica Lag (MB)",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
@@ -1322,18 +1079,39 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 37
+        "y": 12
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "max(pg_replica_lag_bytes{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\"})"
+          "expr": "max(clamp_min((scalar(max(patroni_xlog_location{job=\"patroni_odoo\"})) - max by (name) (patroni_xlog_replayed_location{job=\"patroni_odoo\"} and on (name) (patroni_replica{job=\"patroni_odoo\"} == 1))) / 1024 / 1024, 0))",
+          "legendFormat": "lag"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes"
-        }
+          "unit": "decmbytes",
+          "min": 0,
+          "max": 500,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "green"
+              },
+              {
+                "value": 50,
+                "color": "orange"
+              },
+              {
+                "value": 100,
+                "color": "red"
+              }
+            ]
+          }
+        },
+        "overrides": []
       },
       "options": {
         "reduceOptions": {
@@ -1341,154 +1119,110 @@
             "lastNotNull"
           ]
         },
-        "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value"
+        "showThresholdMarkers": true
       }
     },
     {
-      "id": 8,
-      "type": "stat",
-      "title": "Live \u2014 TPS",
+      "id": 34,
+      "type": "timeseries",
+      "title": "Replica Lag (MB)",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 4,
-        "w": 6,
+        "h": 7,
+        "w": 12,
         "x": 0,
-        "y": 41
+        "y": 16
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "opacity",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "unit": "decmbytes"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(pg_stat_database_xact_commit{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\", datname!~\"template0|template1\"}[5m]))"
+          "expr": "clamp_min((scalar(max(patroni_xlog_location{job=\"patroni_odoo\"})) - max by (name) (patroni_xlog_replayed_location{job=\"patroni_odoo\"} and on (name) (patroni_replica{job=\"patroni_odoo\"} == 1))) / 1024 / 1024, 0)",
+          "legendFormat": "{{name}}",
+          "range": true
         }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ops"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value"
-      }
+      ]
     },
     {
-      "id": 9,
-      "type": "stat",
-      "title": "Backup \u2014 TPS",
+      "id": 35,
+      "type": "timeseries",
+      "title": "Postgres Timeline",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 6,
-        "y": 41
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(rate(pg_stat_database_xact_commit{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\", datname!~\"template0|template1\"}[5m]))"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ops"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value"
-      }
-    },
-    {
-      "id": 10,
-      "type": "stat",
-      "title": "Live \u2014 Buffer hit %",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
+        "h": 7,
+        "w": 12,
         "x": 12,
-        "y": 41
+        "y": 16
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "opacity",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\", datname!=\"\"}[5m])) / clamp_min(sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\", datname!=\"\"}[5m])) + sum(rate(pg_stat_database_blks_read{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\", datname!=\"\"}[5m])), 1)"
+          "expr": "patroni_postgres_timeline{job=\"patroni_odoo\"}",
+          "legendFormat": "{{server}} / {{name}}",
+          "range": true
         }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value"
-      }
-    },
-    {
-      "id": 11,
-      "type": "stat",
-      "title": "Backup \u2014 Buffer hit %",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 18,
-        "y": 41
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "100 * sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\", datname!=\"\"}[5m])) / clamp_min(sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\", datname!=\"\"}[5m])) + sum(rate(pg_stat_database_blks_read{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\", datname!=\"\"}[5m])), 1)"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value"
-      }
+      ]
     }
   ],
   "preload": false,
@@ -1547,13 +1281,13 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
   "timezone": "browser",
   "title": "CCDL ERP Overview",
   "uid": "ccdl-erp-overview",
-  "version": 207,
-  "weekStart": "",
-  "refresh": "auto"
+  "version": 1,
+  "refresh": "30s",
+  "description": "CCDL ERP infrastructure overview: server health, Odoo traffic, and Patroni PostgreSQL cluster."
 }

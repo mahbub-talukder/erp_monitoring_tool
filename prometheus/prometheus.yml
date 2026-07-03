@@ -39,6 +39,17 @@ scrape_configs:
           server: backup
           host: ccdl-backup-server
 
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['10.10.21.5:9113']
+        labels:
+          server: live
+          host: ccdl-live-server-1
+      - targets: ['10.10.21.6:9113']
+        labels:
+          server: backup
+          host: ccdl-backup-server
+
   - job_name: 'postgres_odoo'
     static_configs:
       - targets: ['postgres-exporter-odoo-live:9191']
