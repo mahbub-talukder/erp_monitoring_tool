@@ -29,7 +29,7 @@ On your workstation (for remote install scripts):
 
 ### 1. Install node_exporter on all servers
 
-Runs as systemd on port `9100` with `--collector.systemd` (enables Server Alive, Docker, and Nginx status in Grafana).
+Runs as systemd on port `9100` with `--collector.systemd` and textfile collector (enables Server Alive, Docker, Nginx status, and Odoo HTTP req/s in Grafana).
 
 ```bash
 # Dry-run first (default)
@@ -39,17 +39,16 @@ Runs as systemd on port `9100` with `--collector.systemd` (enables Server Alive,
 DRY_RUN=false ./scripts/install_node_exporter_remote.sh
 ```
 
-### 2. (Optional) Install nginx-prometheus-exporter on Live + Backup
+### 2. Install Odoo HTTP req/s collector (Live + Backup)
 
-Required for **true HTTP req/s** in Grafana. Ensure nginx `stub_status` is enabled first (see script output for snippet).
+Counts Odoo **werkzeug** access-log lines from Docker (`odoo_server1` / `odoo_server2`) and exposes `odoo_http_requests_total` via node_exporter textfile. No nginx required.
 
 ```bash
-./scripts/install_nginx_exporter_remote.sh          # dry-run
-DRY_RUN=false ./scripts/install_nginx_exporter_remote.sh
-docker compose restart prometheus
+./scripts/install_odoo_http_exporter_remote.sh          # dry-run
+DRY_RUN=false ./scripts/install_odoo_http_exporter_remote.sh
 ```
 
-Default stub_status URI: `http://127.0.0.1/stub_status`. Override per host in `HOSTS[]` inside the script, or set `NGINX_SCRAPE_URI` for all hosts.
+Health checks (`/web/health`), longpolling, and websocket traffic are excluded.
 
 ### 3. Enable pg_stat_statements (Live + Backup only)
 
@@ -81,15 +80,19 @@ docker compose up -d
 - Patroni Odoo (CCDL)
 - Postgres Odoo (CCDL)
 
-### Odoo request rate (nginx exporter)
+### Odoo request rate (werkzeug log collector)
 
-The **Odoo Application Req/s** panel reads from the `nginx` Prometheus job (`:9113` on Live and Backup). Install with `scripts/install_nginx_exporter_remote.sh`, then reload Prometheus:
+The **Odoo Application Req/s** panel reads `odoo_http_requests_total` from node_exporter on Live and Backup:
 
-```bash
-docker compose restart prometheus
+```promql
+sum(rate(odoo_http_requests_total{job="node", server=~"live|backup"}[5m]))
 ```
 
-Until the exporter is running, that panel may show **No data** (nginx systemd status in the server table is separate).
+Install with `scripts/install_odoo_http_exporter_remote.sh`. Verify on a server:
+
+```bash
+curl -s http://127.0.0.1:9100/metrics | grep odoo_http_requests_total
+```
 
 ## Project layout
 
@@ -110,6 +113,7 @@ erp-monitoring/
 │   └── provisioning/
 ├── scripts/
 │   ├── install_node_exporter_remote.sh
+│   ├── install_odoo_http_exporter_remote.sh
 │   ├── install_nginx_exporter_remote.sh
 │   └── enable_pg_stat_statements.sh
 └── README.md
@@ -130,16 +134,18 @@ Copied from the MIME monitoring project with email **enabled**:
 1. **Prometheus → Status → Targets** — all `node`, `patroni_odoo`, and `postgres_odoo` targets should be UP.
 2. **Grafana → CCDL ERP Overview** — three server rows with Server Alive, Docker status, Nginx status.
 3. **Patroni Odoo** service row shows `2/2` when both DB nodes are healthy.
+4. **Odoo Application Req/s** — shows `0` or higher after `install_odoo_http_exporter_remote.sh` (not **No data**).
 
 ## Troubleshooting
 
 | Issue | Check |
 |-------|-------|
-| Targets DOWN | Firewall allows `9100`, `5000`, `8008`, `9113` from Docker host to server IPs |
+| Targets DOWN | Firewall allows `9100`, `5000`, `8008` from Docker host to server IPs |
 | Postgres exporter auth failed | Verify `odoo` / `123456` on port `5000` |
 | Docker/Nginx shows N/A (gray) | Service not installed on that host (expected on Observatory) |
 | pg_stat_statements panels empty | Run `enable_pg_stat_statements.sh`; confirm `shared_preload_libraries` |
-| Odoo Req/s shows No data | Run `install_nginx_exporter_remote.sh`; enable nginx `stub_status` on Live/Backup |
+| Odoo Req/s shows No data | Run `install_odoo_http_exporter_remote.sh`; confirm `odoo_http_requests_total` on `:9100` |
+| Odoo Req/s stuck at 0 | Generate Odoo HTTP traffic; check `systemctl status odoo_http_collector.timer` |
 | No alert emails | Confirm SMTP credentials in `alertmanager/alertmanager.yml`; check Alertmanager UI |
 
 ## Security note

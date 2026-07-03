@@ -79,7 +79,7 @@ Wants=network-online.target
 User=node_exporter
 Group=node_exporter
 Type=simple
-ExecStart=/usr/local/bin/node_exporter --web.listen-address=:9100 --collector.systemd
+ExecStart=/usr/local/bin/node_exporter --web.listen-address=:9100 --collector.systemd --collector.textfile.directory=/var/lib/node_exporter/textfile --collector.textfile.directory=/var/lib/node_exporter/textfile
 Restart=always
 RestartSec=5s
 

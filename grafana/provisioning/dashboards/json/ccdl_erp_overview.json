@@ -552,7 +552,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(nginx_http_requests_total{job=\"nginx\", server=~\"live|backup\"}[5m])) or sum(rate(nginx_connections_accepted{job=\"nginx\", server=~\"live|backup\"}[5m]))",
+          "expr": "sum(rate(odoo_http_requests_total{job=\"node\", server=~\"live|backup\"}[5m]))",
           "legendFormat": "{{server}}",
           "range": true
         }
