@@ -33,19 +33,6 @@
   ],
   "panels": [
     {
-      "id": 100,
-      "type": "row",
-      "title": "Infrastructure",
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "collapsed": false,
-      "panels": []
-    },
-    {
       "id": 1,
       "type": "table",
       "title": "Server Health Status",
@@ -54,10 +41,10 @@
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 10,
-        "w": 14,
+        "h": 6,
+        "w": 24,
         "x": 0,
-        "y": 1
+        "y": 0
       },
       "targets": [
         {
@@ -74,30 +61,24 @@
         },
         {
           "refId": "C",
-          "expr": "max by (server,host,instance) (node_systemd_unit_state{job=\"node\", server=~\"$server\", instance=~\"$instance\", name=\"nginx.service\", state=\"active\"}) or max by (server,host,instance) ((up{job=\"node\", server=~\"$server\", instance=~\"$instance\"} * 0) - 1)",
-          "format": "table",
-          "instant": true
-        },
-        {
-          "refId": "D",
           "expr": "100 - (avg by (server,host,instance) (rate(node_cpu_seconds_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", mode=\"idle\"}[5m])) * 100)",
           "format": "table",
           "instant": true
         },
         {
-          "refId": "E",
+          "refId": "D",
           "expr": "(1 - (node_memory_MemAvailable_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\"} / node_memory_MemTotal_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\"})) * 100",
           "format": "table",
           "instant": true
         },
         {
-          "refId": "F",
+          "refId": "E",
           "expr": "100 * (1 - (node_filesystem_avail_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\", mountpoint=\"/\", fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\", mountpoint=\"/\", fstype!~\"tmpfs|overlay\"}))",
           "format": "table",
           "instant": true
         },
         {
-          "refId": "G",
+          "refId": "F",
           "expr": "node_time_seconds{job=\"node\", server=~\"$server\", instance=~\"$instance\"} - node_boot_time_seconds{job=\"node\", server=~\"$server\", instance=~\"$instance\"}",
           "format": "table",
           "instant": true
@@ -132,24 +113,22 @@
               "host": "Host",
               "instance": "Instance",
               "Value #A": "Server Alive",
-              "Value #B": "Docker status",
-              "Value #C": "Nginx status",
-              "Value #D": "CPU usage (%)",
-              "Value #E": "RAM usage (%)",
-              "Value #F": "Disk used/total (%)",
-              "Value #G": "Uptime"
+              "Value #B": "Docker",
+              "Value #C": "CPU",
+              "Value #D": "RAM",
+              "Value #E": "Disk usage",
+              "Value #F": "Uptime"
             },
             "indexByName": {
               "Server": 0,
               "Host": 1,
               "Instance": 2,
               "Server Alive": 3,
-              "Docker status": 4,
-              "Nginx status": 5,
-              "CPU usage (%)": 6,
-              "RAM usage (%)": 7,
-              "Disk used/total (%)": 8,
-              "Uptime": 9
+              "Docker": 4,
+              "CPU": 5,
+              "RAM": 6,
+              "Disk usage": 7,
+              "Uptime": 8
             }
           }
         },
@@ -172,31 +151,25 @@
                   "lastNotNull"
                 ]
               },
-              "Docker status": {
+              "Docker": {
                 "operation": "aggregate",
                 "aggregations": [
                   "lastNotNull"
                 ]
               },
-              "Nginx status": {
+              "CPU": {
                 "operation": "aggregate",
                 "aggregations": [
                   "lastNotNull"
                 ]
               },
-              "CPU usage (%)": {
+              "RAM": {
                 "operation": "aggregate",
                 "aggregations": [
                   "lastNotNull"
                 ]
               },
-              "RAM usage (%)": {
-                "operation": "aggregate",
-                "aggregations": [
-                  "lastNotNull"
-                ]
-              },
-              "Disk used/total (%)": {
+              "Disk usage": {
                 "operation": "aggregate",
                 "aggregations": [
                   "lastNotNull"
@@ -219,11 +192,10 @@
             },
             "renameByName": {
               "Server Alive (lastNotNull)": "Server Alive",
-              "Docker status (lastNotNull)": "Docker status",
-              "Nginx status (lastNotNull)": "Nginx status",
-              "CPU usage (%) (lastNotNull)": "CPU usage (%)",
-              "RAM usage (%) (lastNotNull)": "RAM usage (%)",
-              "Disk used/total (%) (lastNotNull)": "Disk used/total (%)",
+              "Docker (lastNotNull)": "Docker",
+              "CPU (lastNotNull)": "CPU",
+              "RAM (lastNotNull)": "RAM",
+              "Disk usage (lastNotNull)": "Disk usage",
               "Uptime (lastNotNull)": "Uptime"
             }
           }
@@ -247,7 +219,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 100
+                "value": 110
               }
             ]
           },
@@ -259,7 +231,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 200
+                "value": 220
               }
             ]
           },
@@ -271,7 +243,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 120
+                "value": 130
               }
             ]
           },
@@ -283,7 +255,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 120
+                "value": 115
               },
               {
                 "id": "custom.cellOptions",
@@ -330,12 +302,12 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Docker status"
+              "options": "Docker"
             },
             "properties": [
               {
                 "id": "custom.width",
-                "value": 120
+                "value": 115
               },
               {
                 "id": "custom.cellOptions",
@@ -390,67 +362,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Nginx status"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 120
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background"
-                }
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "value",
-                    "options": {
-                      "-1": {
-                        "text": "N/A",
-                        "color": "gray"
-                      },
-                      "0": {
-                        "text": "Inactive",
-                        "color": "red"
-                      },
-                      "1": {
-                        "text": "Active",
-                        "color": "green"
-                      }
-                    }
-                  }
-                ]
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "value": -1.0,
-                      "color": "gray"
-                    },
-                    {
-                      "value": 0.0,
-                      "color": "red"
-                    },
-                    {
-                      "value": 1.0,
-                      "color": "green"
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "CPU usage (%)"
+              "options": "CPU"
             },
             "properties": [
               {
@@ -459,7 +371,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 130
+                "value": 150
               },
               {
                 "id": "custom.cellOptions",
@@ -501,7 +413,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "RAM usage (%)"
+              "options": "RAM"
             },
             "properties": [
               {
@@ -510,7 +422,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 130
+                "value": 150
               },
               {
                 "id": "custom.cellOptions",
@@ -552,7 +464,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Disk used/total (%)"
+              "options": "Disk usage"
             },
             "properties": [
               {
@@ -561,7 +473,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 130
+                "value": 150
               },
               {
                 "id": "custom.cellOptions",
@@ -613,6 +525,10 @@
               {
                 "id": "decimals",
                 "value": 0
+              },
+              {
+                "id": "custom.width",
+                "value": 140
               }
             ]
           }
@@ -629,9 +545,9 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 10,
-        "x": 14,
-        "y": 1
+        "w": 8,
+        "x": 0,
+        "y": 6
       },
       "targets": [
         {
@@ -689,10 +605,10 @@
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 5,
-        "w": 5,
-        "x": 14,
-        "y": 5
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 6
       },
       "targets": [
         {
@@ -764,10 +680,10 @@
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 5,
-        "w": 5,
-        "x": 19,
-        "y": 5
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 6
       },
       "targets": [
         {
@@ -837,7 +753,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 10
       },
       "collapsed": false,
       "panels": []
@@ -854,7 +770,7 @@
         "h": 4,
         "w": 6,
         "x": 0,
-        "y": 12
+        "y": 11
       },
       "targets": [
         {
@@ -914,7 +830,7 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 12
+        "y": 11
       },
       "targets": [
         {
@@ -974,7 +890,7 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 12
+        "y": 11
       },
       "targets": [
         {
@@ -1038,7 +954,7 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 12
+        "y": 11
       },
       "targets": [
         {
@@ -1093,7 +1009,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 15
       },
       "targets": [
         {
@@ -1160,7 +1076,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 15
       },
       "targets": [
         {
