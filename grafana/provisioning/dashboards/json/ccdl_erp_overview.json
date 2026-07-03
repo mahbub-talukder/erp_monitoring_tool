@@ -680,23 +680,24 @@
       }
     },
     {
-      "id": 21,
+      "id": 22,
       "type": "stat",
-      "title": "Patroni Odoo Nodes",
+      "title": "Live \u2014 DB Role",
+      "description": "Patroni cluster role (sparkline over selected time range)",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 3,
-        "w": 10,
+        "h": 5,
+        "w": 5,
         "x": 14,
         "y": 5
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "(sum(patroni_postgres_running{job=\"patroni_odoo\"}) or on() vector(0)) * 100 + 2",
+          "expr": "patroni_primary{job=\"patroni_odoo\", server=\"live\"} or patroni_master{job=\"patroni_odoo\", server=\"live\"}",
           "legendFormat": "{{server}}",
           "range": true
         }
@@ -710,17 +711,13 @@
             {
               "type": "value",
               "options": {
-                "202": {
-                  "text": "2/2",
+                "0": {
+                  "text": "REPLICA",
+                  "color": "blue"
+                },
+                "1": {
+                  "text": "LEADER",
                   "color": "green"
-                },
-                "102": {
-                  "text": "1/2",
-                  "color": "red"
-                },
-                "2": {
-                  "text": "0/2",
-                  "color": "red"
                 }
               }
             }
@@ -730,10 +727,10 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "blue"
               },
               {
-                "value": 202,
+                "value": 1,
                 "color": "green"
               }
             ]
@@ -752,122 +749,84 @@
           "values": false
         },
         "orientation": "auto",
-        "textMode": "value_and_name",
+        "textMode": "value",
         "colorMode": "background",
-        "graphMode": "none"
+        "graphMode": "area"
       }
     },
     {
-      "id": 22,
-      "type": "table",
-      "title": "Patroni Leader / Replica",
-      "description": "Current PostgreSQL cluster role per node",
+      "id": 23,
+      "type": "stat",
+      "title": "Backup \u2014 DB Role",
+      "description": "Patroni cluster role (sparkline over selected time range)",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 3,
-        "w": 10,
-        "x": 14,
-        "y": 8
+        "h": 5,
+        "w": 5,
+        "x": 19,
+        "y": 5
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "patroni_primary{job=\"patroni_odoo\"} or patroni_master{job=\"patroni_odoo\"}",
-          "format": "table",
-          "instant": true
-        }
-      ],
-      "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {
-            "mode": "columns"
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "job": true,
-              "instance": true,
-              "scope": true
-            },
-            "renameByName": {
-              "server": "Server",
-              "host": "Host",
-              "name": "Patroni name",
-              "Value": "Role"
-            },
-            "indexByName": {
-              "Server": 0,
-              "Host": 1,
-              "Patroni name": 2,
-              "Role": 3
-            }
-          }
+          "expr": "patroni_primary{job=\"patroni_odoo\", server=\"backup\"} or patroni_master{job=\"patroni_odoo\", server=\"backup\"}",
+          "legendFormat": "{{server}}",
+          "range": true
         }
       ],
       "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Role"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background"
-                }
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "value",
-                    "options": {
-                      "0": {
-                        "text": "REPLICA",
-                        "color": "blue"
-                      },
-                      "1": {
-                        "text": "LEADER",
-                        "color": "green"
-                      }
-                    }
-                  }
-                ]
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "value": 0,
-                      "color": "blue"
-                    },
-                    {
-                      "value": 1,
-                      "color": "green"
-                    }
-                  ]
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "REPLICA",
+                  "color": "blue"
+                },
+                "1": {
+                  "text": "LEADER",
+                  "color": "green"
                 }
               }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "blue"
+              },
+              {
+                "value": 1,
+                "color": "green"
+              }
             ]
-          }
-        ]
+          },
+          "unit": "none",
+          "decimals": 0
+        },
+        "overrides": []
       },
       "options": {
-        "showHeader": true,
-        "cellHeight": "lg"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "background",
+        "graphMode": "area"
       }
     },
     {
@@ -1124,7 +1083,7 @@
     },
     {
       "id": 34,
-      "type": "timeseries",
+      "type": "gauge",
       "title": "Replica Lag (MB)",
       "datasource": {
         "type": "prometheus",
@@ -1136,34 +1095,6 @@
         "x": 0,
         "y": 16
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "lineWidth": 2,
-            "showPoints": "never",
-            "spanNulls": true
-          },
-          "unit": "decmbytes"
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
       "targets": [
         {
           "refId": "A",
@@ -1171,12 +1102,56 @@
           "legendFormat": "{{name}}",
           "range": true
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "green"
+              },
+              {
+                "value": 50,
+                "color": "orange"
+              },
+              {
+                "value": 100,
+                "color": "red"
+              }
+            ]
+          },
+          "unit": "decmbytes",
+          "min": 0,
+          "max": 500
+        },
+        "overrides": []
+      },
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      }
     },
     {
       "id": 35,
-      "type": "timeseries",
-      "title": "Postgres Timeline",
+      "type": "bargauge",
+      "title": "Postgres Timeline by Node",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
@@ -1187,34 +1162,6 @@
         "x": 12,
         "y": 16
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "lineWidth": 2,
-            "showPoints": "never",
-            "spanNulls": true
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
       "targets": [
         {
           "refId": "A",
@@ -1222,7 +1169,46 @@
           "legendFormat": "{{server}} / {{name}}",
           "range": true
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "green"
+              },
+              {
+                "value": 1,
+                "color": "red"
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "manual",
+        "minVizHeight": 16,
+        "minVizWidth": 8
+      }
     }
   ],
   "preload": false,
