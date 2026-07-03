@@ -12,8 +12,8 @@ PG_DATABASE="${PG_DATABASE:-postgres}"
 
 # Format: "name|ip|ssh_port|ssh_user|ssh_password"
 HOSTS=(
-  "live|192.168.3.245|9841|ccdlerp|CCDL@ERP0pen"
-  "backup|192.168.3.240|9841|ccdlerp|CCDL@ERP0pen"
+  "live|10.10.21.5|9841|ccdlerp|CCDL@ERP0pen"
+  "backup|10.10.21.6|9841|ccdlerp|CCDL@ERP0pen"
 )
 
 if ! command -v sshpass >/dev/null 2>&1; then

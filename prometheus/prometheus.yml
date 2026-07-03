@@ -14,11 +14,11 @@ rule_files:
 scrape_configs:
   - job_name: 'node'
     static_configs:
-      - targets: ['192.168.3.245:9100']
+      - targets: ['10.10.21.5:9100']
         labels:
           server: live
           host: ccdl-live-server-1
-      - targets: ['192.168.3.240:9100']
+      - targets: ['10.10.21.6:9100']
         labels:
           server: backup
           host: ccdl-backup-server
@@ -30,11 +30,11 @@ scrape_configs:
   - job_name: 'patroni_odoo'
     metrics_path: /metrics
     static_configs:
-      - targets: ['192.168.3.245:8008']
+      - targets: ['10.10.21.5:8008']
         labels:
           server: live
           host: ccdl-live-server-1
-      - targets: ['192.168.3.240:8008']
+      - targets: ['10.10.21.6:8008']
         labels:
           server: backup
           host: ccdl-backup-server
@@ -43,11 +43,11 @@ scrape_configs:
     static_configs:
       - targets: ['postgres-exporter-odoo-live:9191']
         labels:
-          instance: 192.168.3.245:5000
+          instance: 10.10.21.5:5000
           server: live
           host: ccdl-live-server-1
       - targets: ['postgres-exporter-odoo-backup:9192']
         labels:
-          instance: 192.168.3.240:5000
+          instance: 10.10.21.6:5000
           server: backup
           host: ccdl-backup-server

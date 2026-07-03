@@ -213,7 +213,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (db_node, datname) (\n  rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"192.168.3.245:5000\"}[$__rate_interval])\n)\n/\n(\n  sum by (db_node, datname) (\n    rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"192.168.3.245:5000\"}[$__rate_interval])\n    +\n    rate(pg_stat_database_blks_read{job=\"postgres_odoo\", datname!=\"\", instance=\"192.168.3.245:5000\"}[$__rate_interval])\n  )\n)",
+          "expr": "sum by (db_node, datname) (\n  rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"10.10.21.5:5000\"}[$__rate_interval])\n)\n/\n(\n  sum by (db_node, datname) (\n    rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"10.10.21.5:5000\"}[$__rate_interval])\n    +\n    rate(pg_stat_database_blks_read{job=\"postgres_odoo\", datname!=\"\", instance=\"10.10.21.5:5000\"}[$__rate_interval])\n  )\n)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -312,7 +312,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by (datname) (pg_stat_database_numbackends{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"192.168.3.245:5000\"})",
+          "expr": "sum by (datname) (pg_stat_database_numbackends{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"10.10.21.5:5000\"})",
           "legendFormat": "{{datname}}",
           "range": true,
           "refId": "A"
@@ -407,7 +407,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "irate(pg_stat_database_xact_commit{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"192.168.3.245:5000\"}[$__rate_interval])",
+          "expr": "irate(pg_stat_database_xact_commit{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"10.10.21.5:5000\"}[$__rate_interval])",
           "legendFormat": "xact_commit/s",
           "range": true,
           "refId": "A"
@@ -479,7 +479,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (db_node, datname) (\n  rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"192.168.3.240:5000\"}[$__rate_interval])\n)\n/\n(\n  sum by (db_node, datname) (\n    rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"192.168.3.240:5000\"}[$__rate_interval])\n    +\n    rate(pg_stat_database_blks_read{job=\"postgres_odoo\", datname!=\"\", instance=\"192.168.3.240:5000\"}[$__rate_interval])\n  )\n)",
+          "expr": "sum by (db_node, datname) (\n  rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"10.10.21.6:5000\"}[$__rate_interval])\n)\n/\n(\n  sum by (db_node, datname) (\n    rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"10.10.21.6:5000\"}[$__rate_interval])\n    +\n    rate(pg_stat_database_blks_read{job=\"postgres_odoo\", datname!=\"\", instance=\"10.10.21.6:5000\"}[$__rate_interval])\n  )\n)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -578,7 +578,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by (datname) (pg_stat_database_numbackends{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"192.168.3.240:5000\"})",
+          "expr": "sum by (datname) (pg_stat_database_numbackends{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"10.10.21.6:5000\"})",
           "legendFormat": "{{datname}}",
           "range": true,
           "refId": "A"
@@ -673,7 +673,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "irate(pg_stat_database_xact_commit{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"192.168.3.240:5000\"}[$__rate_interval])",
+          "expr": "irate(pg_stat_database_xact_commit{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"10.10.21.6:5000\"}[$__rate_interval])",
           "legendFormat": "xact_commit/s",
           "range": true,
           "refId": "A"
@@ -745,7 +745,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (db_node, datname) (\n  rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"192.168.3.240:5000\"}[$__rate_interval])\n)\n/\n(\n  sum by (db_node, datname) (\n    rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"192.168.3.240:5000\"}[$__rate_interval])\n    +\n    rate(pg_stat_database_blks_read{job=\"postgres_odoo\", datname!=\"\", instance=\"192.168.3.240:5000\"}[$__rate_interval])\n  )\n)",
+          "expr": "sum by (db_node, datname) (\n  rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"10.10.21.6:5000\"}[$__rate_interval])\n)\n/\n(\n  sum by (db_node, datname) (\n    rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", datname!=\"\", instance=\"10.10.21.6:5000\"}[$__rate_interval])\n    +\n    rate(pg_stat_database_blks_read{job=\"postgres_odoo\", datname!=\"\", instance=\"10.10.21.6:5000\"}[$__rate_interval])\n  )\n)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -844,7 +844,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by (datname) (pg_stat_database_numbackends{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"192.168.3.240:5000\"})",
+          "expr": "sum by (datname) (pg_stat_database_numbackends{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"10.10.21.6:5000\"})",
           "legendFormat": "{{datname}}",
           "range": true,
           "refId": "A"
@@ -939,7 +939,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "irate(pg_stat_database_xact_commit{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"192.168.3.240:5000\"}[$__rate_interval])",
+          "expr": "irate(pg_stat_database_xact_commit{job=\"postgres_odoo\", datname!~\"template0|template1\", instance=\"10.10.21.6:5000\"}[$__rate_interval])",
           "legendFormat": "xact_commit/s",
           "range": true,
           "refId": "A"
@@ -1465,8 +1465,8 @@
     "list": [
       {
         "current": {
-          "text": "192.168.3.245:5000 (Live)",
-          "value": "192.168.3.245:5000"
+          "text": "10.10.21.5:5000 (Live)",
+          "value": "10.10.21.5:5000"
         },
         "hide": 0,
         "includeAll": false,
@@ -1475,17 +1475,17 @@
         "name": "postgres_instance",
         "options": [
           {
-            "text": "192.168.3.245:5000 (Live)",
-            "value": "192.168.3.245:5000",
+            "text": "10.10.21.5:5000 (Live)",
+            "value": "10.10.21.5:5000",
             "selected": true
           },
           {
-            "text": "192.168.3.240:5000 (Backup)",
-            "value": "192.168.3.240:5000",
+            "text": "10.10.21.6:5000 (Backup)",
+            "value": "10.10.21.6:5000",
             "selected": false
           }
         ],
-        "query": "192.168.3.245:5000,192.168.3.240:5000",
+        "query": "10.10.21.5:5000,10.10.21.6:5000",
         "skipUrlSync": false,
         "type": "custom"
       }

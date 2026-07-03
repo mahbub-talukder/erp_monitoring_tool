@@ -1219,7 +1219,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(pg_stat_database_numbackends{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\", datname!~\"template0|template1\"})"
+          "expr": "sum(pg_stat_database_numbackends{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\", datname!~\"template0|template1\"})"
         }
       ],
       "fieldConfig": {
@@ -1255,7 +1255,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(pg_stat_database_numbackends{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\", datname!~\"template0|template1\"})"
+          "expr": "sum(pg_stat_database_numbackends{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\", datname!~\"template0|template1\"})"
         }
       ],
       "fieldConfig": {
@@ -1291,7 +1291,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "max(pg_replica_lag_bytes{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\"})"
+          "expr": "max(pg_replica_lag_bytes{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\"})"
         }
       ],
       "fieldConfig": {
@@ -1327,7 +1327,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "max(pg_replica_lag_bytes{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\"})"
+          "expr": "max(pg_replica_lag_bytes{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\"})"
         }
       ],
       "fieldConfig": {
@@ -1363,7 +1363,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(pg_stat_database_xact_commit{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\", datname!~\"template0|template1\"}[5m]))"
+          "expr": "sum(rate(pg_stat_database_xact_commit{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\", datname!~\"template0|template1\"}[5m]))"
         }
       ],
       "fieldConfig": {
@@ -1399,7 +1399,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(rate(pg_stat_database_xact_commit{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\", datname!~\"template0|template1\"}[5m]))"
+          "expr": "sum(rate(pg_stat_database_xact_commit{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\", datname!~\"template0|template1\"}[5m]))"
         }
       ],
       "fieldConfig": {
@@ -1435,7 +1435,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\", datname!=\"\"}[5m])) / clamp_min(sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\", datname!=\"\"}[5m])) + sum(rate(pg_stat_database_blks_read{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\", datname!=\"\"}[5m])), 1)"
+          "expr": "100 * sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\", datname!=\"\"}[5m])) / clamp_min(sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\", datname!=\"\"}[5m])) + sum(rate(pg_stat_database_blks_read{job=\"postgres_odoo\", instance=\"10.10.21.5:5000\", datname!=\"\"}[5m])), 1)"
         }
       ],
       "fieldConfig": {
@@ -1471,7 +1471,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\", datname!=\"\"}[5m])) / clamp_min(sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\", datname!=\"\"}[5m])) + sum(rate(pg_stat_database_blks_read{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\", datname!=\"\"}[5m])), 1)"
+          "expr": "100 * sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\", datname!=\"\"}[5m])) / clamp_min(sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\", datname!=\"\"}[5m])) + sum(rate(pg_stat_database_blks_read{job=\"postgres_odoo\", instance=\"10.10.21.6:5000\", datname!=\"\"}[5m])), 1)"
         }
       ],
       "fieldConfig": {

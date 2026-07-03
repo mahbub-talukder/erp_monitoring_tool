@@ -10,8 +10,8 @@ SSH_TIMEOUT="${SSH_TIMEOUT:-20}"
 
 # Format: "ip|ssh_port|username|password"
 HOSTS=(
-  "192.168.3.245|9841|ccdlerp|CCDL@ERP0pen"   # CCDL-Live Server 1
-  "192.168.3.240|9841|ccdlerp|CCDL@ERP0pen"   # CCDL Backup Server
+  "10.10.21.5|9841|ccdlerp|CCDL@ERP0pen"   # CCDL-Live Server 1
+  "10.10.21.6|9841|ccdlerp|CCDL@ERP0pen"   # CCDL Backup Server
   "10.10.21.11|9841|ccdlerp|CCDL@ERP0pen"     # CCDL Observatory Server
 )
 
