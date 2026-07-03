@@ -92,7 +92,12 @@ fi
 curl -fsSL "$URL" -o "$TMP_DIR/$TAR"
 tar -xzf "$TMP_DIR/$TAR" -C "$TMP_DIR"
 
-BIN_SRC="$TMP_DIR/nginx-prometheus-exporter_${VERSION}_linux_${GOARCH}/nginx-prometheus-exporter"
+BIN_SRC="$TMP_DIR/nginx-prometheus-exporter"
+if [[ ! -f "$BIN_SRC" ]]; then
+  echo "Binary not found in archive (expected ${BIN_SRC})" >&2
+  ls -la "$TMP_DIR" >&2
+  exit 1
+fi
 run_sudo install -m 0755 "$BIN_SRC" /usr/local/bin/nginx-prometheus-exporter
 run_sudo chown root:root /usr/local/bin/nginx-prometheus-exporter
 
