@@ -39,7 +39,19 @@ Runs as systemd on port `9100` with `--collector.systemd` (enables Server Alive,
 DRY_RUN=false ./scripts/install_node_exporter_remote.sh
 ```
 
-### 2. Enable pg_stat_statements (Live + Backup only)
+### 2. (Optional) Install nginx-prometheus-exporter on Live + Backup
+
+Required for **true HTTP req/s** in Grafana. Ensure nginx `stub_status` is enabled first (see script output for snippet).
+
+```bash
+./scripts/install_nginx_exporter_remote.sh          # dry-run
+DRY_RUN=false ./scripts/install_nginx_exporter_remote.sh
+docker compose restart prometheus
+```
+
+Default stub_status URI: `http://127.0.0.1/stub_status`. Override per host in `HOSTS[]` inside the script, or set `NGINX_SCRAPE_URI` for all hosts.
+
+### 3. Enable pg_stat_statements (Live + Backup only)
 
 Required for Postgres query metrics in Grafana. Postgres must have `pg_stat_statements` in `shared_preload_libraries` (restart required if not already set).
 
@@ -48,13 +60,13 @@ Required for Postgres query metrics in Grafana. Postgres must have `pg_stat_stat
 DRY_RUN=false ./scripts/enable_pg_stat_statements.sh
 ```
 
-### 3. Start the monitoring stack
+### 4. Start the monitoring stack
 
 ```bash
 docker compose up -d
 ```
 
-### 4. Access
+### 5. Access
 
 | Service | URL | Default login |
 |---------|-----|---------------|
@@ -71,7 +83,7 @@ docker compose up -d
 
 ### Odoo request rate (nginx exporter)
 
-The **Odoo Application Req/s** panel reads from the `nginx` Prometheus job (`:9113` on Live and Backup). Install [nginx-prometheus-exporter](https://github.com/nginxinc/nginx-prometheus-exporter) on those servers pointing at nginx stub_status, then reload Prometheus:
+The **Odoo Application Req/s** panel reads from the `nginx` Prometheus job (`:9113` on Live and Backup). Install with `scripts/install_nginx_exporter_remote.sh`, then reload Prometheus:
 
 ```bash
 docker compose restart prometheus
@@ -98,6 +110,7 @@ erp-monitoring/
 │   └── provisioning/
 ├── scripts/
 │   ├── install_node_exporter_remote.sh
+│   ├── install_nginx_exporter_remote.sh
 │   └── enable_pg_stat_statements.sh
 └── README.md
 ```
@@ -126,7 +139,7 @@ Copied from the MIME monitoring project with email **enabled**:
 | Postgres exporter auth failed | Verify `odoo` / `123456` on port `5000` |
 | Docker/Nginx shows N/A (gray) | Service not installed on that host (expected on Observatory) |
 | pg_stat_statements panels empty | Run `enable_pg_stat_statements.sh`; confirm `shared_preload_libraries` |
-| Odoo Req/s shows No data | Install nginx-prometheus-exporter on Live/Backup (`:9113`) |
+| Odoo Req/s shows No data | Run `install_nginx_exporter_remote.sh`; enable nginx `stub_status` on Live/Backup |
 | No alert emails | Confirm SMTP credentials in `alertmanager/alertmanager.yml`; check Alertmanager UI |
 
 ## Security note
