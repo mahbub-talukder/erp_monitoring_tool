@@ -1,0 +1,11 @@
+groups:
+  - name: service_health
+    interval: 15s
+    rules:
+      # Encoded value: (current_up * 100) + expected_total
+      # 202 -> 2/2, 102 -> 1/2, 002 -> 0/2
+      - record: service_health_key
+        expr: (sum(patroni_postgres_running{job="patroni_odoo"}) or on() vector(0)) * 100 + 2
+        labels:
+          service: Patroni Odoo
+          sort: "01"

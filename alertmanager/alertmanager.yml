@@ -1,0 +1,33 @@
+global:
+  resolve_timeout: 2m
+  smtp_smarthost: 'mail.mimebd.com:587'
+  smtp_from: 'mime.connect@mimebd.com'
+  smtp_auth_username: 'mime.connect@mimebd.com'
+  smtp_auth_password: '6@u?IH7yw(Z=VJsF'
+  smtp_require_tls: true
+
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+route:
+  receiver: default-null
+  group_by: ['notify']
+  group_wait: 30s
+  group_interval: 1m
+  repeat_interval: 2m
+  routes:
+    - matchers:
+        - notify="infra_hosts"
+      receiver: recipents-email
+      continue: false
+
+receivers:
+  - name: default-null
+
+  - name: recipents-email
+    email_configs:
+      - to: 'saif.ahmed@cg-bd.com,mahbub.alum@cg-bd.com,hasin.arman@cg-bd.com'
+        send_resolved: true
+        headers:
+          Subject: '[{{ .Status | toUpper }}] CCDL ERP health ({{ if eq .Status "firing" }}{{ len (.Alerts.Firing) }}{{ else }}{{ len (.Alerts.Resolved) }}{{ end }} alert(s))'
+        html: '{{ template "custom.email.html" . }}'

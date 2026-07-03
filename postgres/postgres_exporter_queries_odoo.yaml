@@ -1,0 +1,186 @@
+# Custom metrics for postgres_exporter (--extend.query-path).
+# Enables Grafana panels similar to pgAdmin Activity: sessions by state (active / idle / …).
+#
+# Patroni-style signals (see also Grafana / Prometheus):
+# - pg_instance_role_is_replica: 1 = replica, 0 = primary (who is leader).
+# - pg_replica_lag_*: meaningful on replicas; 0 on primary.
+# - pg_stat_replication_*: rows only on the primary; use for per-replica lag from leader.
+
+pg_instance_role:
+  query: |
+    SELECT
+      CASE WHEN pg_is_in_recovery() THEN 1.0 ELSE 0.0 END AS is_replica,
+      CASE WHEN pg_is_in_recovery() THEN 'replica' ELSE 'primary' END::text AS role
+  metrics:
+    - is_replica:
+        usage: "GAUGE"
+        description: "1 if this instance is a replica, 0 if primary"
+    - role:
+        usage: "LABEL"
+        description: "Instance role: primary or replica"
+
+pg_primary_role:
+  query: |
+    SELECT
+      CASE WHEN pg_is_in_recovery() THEN 0.0 ELSE 1.0 END AS is_primary
+  metrics:
+    - is_primary:
+        usage: "GAUGE"
+        description: "1 if this instance is primary, else 0"
+
+pg_replica_role:
+  query: |
+    SELECT
+      CASE WHEN pg_is_in_recovery() THEN 1.0 ELSE 0.0 END AS is_replica
+  metrics:
+    - is_replica:
+        usage: "GAUGE"
+        description: "1 if this instance is replica, else 0"
+
+pg_replica_lag:
+  query: |
+    SELECT
+      CASE WHEN pg_is_in_recovery() THEN
+        COALESCE(
+          EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp()))::double precision,
+          0.0
+        )
+      ELSE 0.0
+      END AS replay_lag_seconds,
+      CASE WHEN pg_is_in_recovery() THEN
+        COALESCE(
+          pg_wal_lsn_diff(pg_last_wal_receive_lsn(), pg_last_wal_replay_lsn())::double precision,
+          0.0
+        )
+      ELSE 0.0
+      END AS replay_lag_bytes
+  metrics:
+    - replay_lag_seconds:
+        usage: "GAUGE"
+        description: "Replica replay delay based on now() - pg_last_xact_replay_timestamp() (seconds); 0 on primary"
+    - replay_lag_bytes:
+        usage: "GAUGE"
+        description: "Bytes between last received and last replayed WAL on replica; 0 on primary"
+
+pg_stat_replication_from_primary:
+  query: |
+    SELECT
+      COALESCE(NULLIF(application_name, ''), 'unnamed')::text AS application_name,
+      COALESCE(client_addr::text, '') AS client_addr,
+      COALESCE(EXTRACT(EPOCH FROM replay_lag)::double precision, 0.0) AS replay_lag_seconds,
+      pg_wal_lsn_diff(sent_lsn, replay_lsn)::double precision AS wal_bytes_behind
+    FROM pg_stat_replication
+  metrics:
+    - application_name:
+        usage: "LABEL"
+        description: "walreceiver application_name"
+    - client_addr:
+        usage: "LABEL"
+        description: "Replica client address"
+    - replay_lag_seconds:
+        usage: "GAUGE"
+        description: "replay_lag from primary's view (seconds)"
+    - wal_bytes_behind:
+        usage: "GAUGE"
+        description: "sent_lsn minus replay_lsn on streaming replica (bytes)"
+
+pgadmin_activity:
+  query: |
+    SELECT
+      datname::text AS datname,
+      COALESCE(state::text, 'unknown') AS state,
+      COUNT(*)::double precision AS sessions
+    FROM pg_stat_activity
+    WHERE pid <> pg_backend_pid()
+      AND datname IS NOT NULL
+    GROUP BY datname, state
+  metrics:
+    - datname:
+        usage: "LABEL"
+        description: "Database name"
+    - state:
+        usage: "LABEL"
+        description: "pg_stat_activity.state"
+    - sessions:
+        usage: "GAUGE"
+        description: "Backend count for this datname and state"
+
+# pg_stat_statements (requires shared_preload_libraries + extension in THIS database — same as DATA_SOURCE_NAME).
+# On replicas with no local queries, this returns 0 rows → no metrics (pick primary instance in Grafana).
+# PG10-compatible variant: uses total_time from pg_stat_statements.
+# Exports cumulative counters per query text; Grafana ranks top 10 via increase(...[$window]).
+# No SQL LIMIT — ranking is done in PromQL so recent spikes are visible.
+# WHERE clause drops catalog + postgres_exporter / monitoring SQL to highlight app and abuse traffic.
+# Metrics: pg_stat_statements_by_query_calls, pg_stat_statements_by_query_total_exec_time_ms
+
+pg_stat_statements_by_query:
+  query: |
+    SELECT
+      COALESCE(MIN(queryid::bigint), 0)::text AS queryid,
+      regexp_replace(
+        replace(
+          replace(
+            replace(
+              trim(both FROM replace(query, E'\n', ' ')),
+              '"', ' '
+            ),
+            E'\\', ' '
+          ),
+          '|', ' '
+        ),
+        '\s+', ' ', 'g'
+      ) AS full_query,
+      LEFT(
+        regexp_replace(
+          replace(
+            replace(
+              replace(
+                trim(both FROM replace(query, E'\n', ' ')),
+                '"', ' '
+              ),
+              E'\\', ' '
+            ),
+            '|', ' '
+          ),
+          '\s+', ' ', 'g'
+        ),
+        40
+      ) AS short_query,
+      SUM(calls)::double precision AS calls,
+      SUM(total_time)::double precision AS total_exec_time_ms
+    FROM pg_stat_statements
+    WHERE COALESCE(query, '') NOT ILIKE '%pg_catalog%'
+      AND COALESCE(query, '') NOT ILIKE '%information_schema%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_stat_statements%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_database_size%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_is_in_recovery%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_last_xact_replay%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_last_wal_%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_wal_lsn_diff%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_stat_replication%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_stat_activity%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_stat_database%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_settings%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_locks%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_stat_bgwriter%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_stat_archiver%'
+      AND COALESCE(query, '') NOT ILIKE '%pg_backend_pid%'
+      AND COALESCE(query, '') NOT ILIKE '%FROM pg_database%'
+      AND COALESCE(query, '') NOT ILIKE '%SELECT version(%'
+    GROUP BY query
+  metrics:
+    - queryid:
+        usage: "LABEL"
+        description: "Representative pg_stat_statements.queryid (MIN when rows merged)"
+    - short_query:
+        usage: "LABEL"
+        description: "Whitespace-normalized query text, max 40 chars"
+    - full_query:
+        usage: "LABEL"
+        description: "Full whitespace-normalized query text"
+    - calls:
+        usage: "COUNTER"
+        description: "Cumulative calls for this query text (use increase() in PromQL)"
+    - total_exec_time_ms:
+        usage: "COUNTER"
+        description: "Cumulative execution time in ms (use increase() in PromQL)"

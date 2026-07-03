@@ -1,0 +1,1559 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [
+    {
+      "title": "Patroni Odoo (detail)",
+      "url": "/d/sh-patroni-odoo-ccdl/patroni-odoo",
+      "type": "link",
+      "icon": "external link"
+    },
+    {
+      "title": "Postgres Odoo (detail)",
+      "url": "/d/sh-postgres-odoo-ccdl/postgres-odoo",
+      "type": "link",
+      "icon": "external link"
+    }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "type": "table",
+      "title": "Server Health Status",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max by (server,host,instance) (up{job=\"node\", server=~\"$server\", instance=~\"$instance\"})",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "B",
+          "expr": "max by (server,host,instance) (node_systemd_unit_state{job=\"node\", server=~\"$server\", instance=~\"$instance\", name=\"docker.service\", state=\"active\"}) or max by (server,host,instance) ((up{job=\"node\", server=~\"$server\", instance=~\"$instance\"} * 0) - 1)",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "C",
+          "expr": "max by (server,host,instance) (node_systemd_unit_state{job=\"node\", server=~\"$server\", instance=~\"$instance\", name=\"nginx.service\", state=\"active\"}) or max by (server,host,instance) ((up{job=\"node\", server=~\"$server\", instance=~\"$instance\"} * 0) - 1)",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "D",
+          "expr": "100 - (avg by (server,host,instance) (rate(node_cpu_seconds_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", mode=\"idle\"}[5m])) * 100)",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "E",
+          "expr": "(1 - (node_memory_MemAvailable_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\"} / node_memory_MemTotal_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\"})) * 100",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "F",
+          "expr": "100 * (1 - (node_filesystem_avail_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\", mountpoint=\"/\", fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\", mountpoint=\"/\", fstype!~\"tmpfs|overlay\"}))",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "G",
+          "expr": "sum by (server,host,instance) (rate(node_disk_read_bytes_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", device!~\"loop.*|ram.*\"}[5m]))",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "H",
+          "expr": "sum by (server,host,instance) (rate(node_disk_written_bytes_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", device!~\"loop.*|ram.*\"}[5m]))",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "I",
+          "expr": "100 * (1 - (node_memory_SwapFree_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\"} / node_memory_SwapTotal_bytes{job=\"node\", server=~\"$server\", instance=~\"$instance\"}))",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "J",
+          "expr": "node_time_seconds{job=\"node\", server=~\"$server\", instance=~\"$instance\"} - node_boot_time_seconds{job=\"node\", server=~\"$server\", instance=~\"$instance\"}",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "K",
+          "expr": "100 * node_load1{job=\"node\", server=~\"$server\", instance=~\"$instance\"} / (count by (server,host,instance) (node_cpu_seconds_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", mode=\"idle\"}))",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "L",
+          "expr": "100 * node_load5{job=\"node\", server=~\"$server\", instance=~\"$instance\"} / (count by (server,host,instance) (node_cpu_seconds_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", mode=\"idle\"}))",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "refId": "M",
+          "expr": "100 * node_load15{job=\"node\", server=~\"$server\", instance=~\"$instance\"} / (count by (server,host,instance) (node_cpu_seconds_total{job=\"node\", server=~\"$server\", instance=~\"$instance\", mode=\"idle\"}))",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "md",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "fields": ""
+        },
+        "frozenColumns": 4,
+        "frozenColumnsCount": 4,
+        "frozenColumnsLeft": 4
+      },
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "host": "Host",
+              "instance": "Instance",
+              "Value #A": "Server Alive",
+              "Value #B": "Docker status",
+              "Value #C": "Nginx status",
+              "Value #D": "CPU usage (%)",
+              "Value #E": "RAM usage (%)",
+              "Value #F": "Disk used/total (%)",
+              "Value #G": "Disk Read",
+              "Value #H": "Disk Write",
+              "Value #I": "Swap usage (%)",
+              "Value #J": "Uptime",
+              "Value #K": "Load 1m (%)",
+              "Value #L": "Load 5m (%)",
+              "Value #M": "Load 15m (%)",
+              "server": "Server"
+            },
+            "indexByName": {
+              "Server": 0,
+              "Host": 1,
+              "Instance": 2,
+              "Server Alive": 3,
+              "Docker status": 4,
+              "Nginx status": 5,
+              "CPU usage (%)": 6,
+              "RAM usage (%)": 7,
+              "Disk used/total (%)": 8,
+              "Disk Read": 9,
+              "Disk Write": 10,
+              "Swap usage (%)": 11,
+              "Uptime": 12,
+              "Load 1m (%)": 13,
+              "Load 5m (%)": 14,
+              "Load 15m (%)": 15
+            }
+          }
+        },
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "Server": {
+                "operation": "groupby"
+              },
+              "Host": {
+                "operation": "groupby"
+              },
+              "Instance": {
+                "operation": "groupby"
+              },
+              "Server Alive": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Docker status": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Nginx status": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "CPU usage (%)": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "RAM usage (%)": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Disk used/total (%)": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Disk Read": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Disk Write": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Swap usage (%)": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Uptime": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Load 1m (%)": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Load 5m (%)": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Load 15m (%)": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Server": {
+                "operation": "groupby"
+              }
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "Server Alive (lastNotNull)": "Server Alive",
+              "CPU usage (%) (lastNotNull)": "CPU usage (%)",
+              "RAM usage (%) (lastNotNull)": "RAM usage (%)",
+              "Disk used/total (%) (lastNotNull)": "Disk used/total (%)",
+              "Disk Read (lastNotNull)": "Disk Read",
+              "Disk Write (lastNotNull)": "Disk Write",
+              "Swap usage (%) (lastNotNull)": "Swap usage (%)",
+              "Uptime (lastNotNull)": "Uptime",
+              "Load 1m (%) (lastNotNull)": "Load 1m (%)",
+              "Load 5m (%) (lastNotNull)": "Load 5m (%)",
+              "Load 15m (%) (lastNotNull)": "Load 15m (%)",
+              "Docker status (lastNotNull)": "Docker status",
+              "Nginx status (lastNotNull)": "Nginx status"
+            },
+            "indexByName": {
+              "Server": 0,
+              "Role": 1,
+              "Host": 2,
+              "Instance": 3,
+              "Server Alive": 4,
+              "Docker status": 5,
+              "Nginx status": 6,
+              "CPU usage (%)": 7,
+              "RAM usage (%)": 8,
+              "Disk used/total (%)": 9,
+              "Disk Read": 10,
+              "Disk Write": 11,
+              "Swap usage (%)": 12,
+              "Uptime": 13,
+              "Load 1m (%)": 14,
+              "Load 5m (%)": 15,
+              "Load 15m (%)": 16
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "cellOptions": {
+              "type": "auto"
+            }
+          },
+          "decimals": 2
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Host"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 220
+              },
+              {
+                "id": "custom.width",
+                "value": 220
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "data-links"
+                }
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "${__value.text}",
+                    "url": "/d/sh-role-${__data.fields.Role}/server-health-role?orgId=1",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Instance"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 125
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "regex",
+                    "options": {
+                      "pattern": "^([^:]+):.*$",
+                      "result": {
+                        "text": "$1"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Server"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 95
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Server"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Server Alive"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "\ud83d\udd34 Down",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "\ud83d\udfe2 Up",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "red"
+                    },
+                    {
+                      "value": 1,
+                      "color": "green"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CPU usage (%)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "green"
+                    },
+                    {
+                      "value": 70,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 85,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "RAM usage (%)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "green"
+                    },
+                    {
+                      "value": 75,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 85,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Disk used/total (%)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "green"
+                    },
+                    {
+                      "value": 80,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 90,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Load 1m (%)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "green"
+                    },
+                    {
+                      "value": 70,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 100,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Load 5m (%)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "green"
+                    },
+                    {
+                      "value": 70,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 100,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Load 15m (%)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "green"
+                    },
+                    {
+                      "value": 70,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 100,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Swap usage (%)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": 0,
+                      "color": "green"
+                    },
+                    {
+                      "value": 50,
+                      "color": "yellow"
+                    },
+                    {
+                      "value": 80,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Disk Read"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "Bps"
+              },
+              {
+                "id": "custom.width",
+                "value": 120
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Disk Write"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "Bps"
+              },
+              {
+                "id": "custom.width",
+                "value": 120
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Uptime"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dtdurations"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Docker status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 130
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "-1": {
+                        "text": "\u26aa N/A",
+                        "color": "gray"
+                      },
+                      "0": {
+                        "text": "\ud83d\udd34 Inactive",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "\ud83d\udfe2 Active",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": -1,
+                      "color": "gray"
+                    },
+                    {
+                      "value": 0,
+                      "color": "red"
+                    },
+                    {
+                      "value": 1,
+                      "color": "green"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nginx status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 130
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "-1": {
+                        "text": "\u26aa N/A",
+                        "color": "gray"
+                      },
+                      "0": {
+                        "text": "\ud83d\udd34 Inactive",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "\ud83d\udfe2 Active",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": -1,
+                      "color": "gray"
+                    },
+                    {
+                      "value": 0,
+                      "color": "red"
+                    },
+                    {
+                      "value": 1,
+                      "color": "green"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "type": "table",
+      "title": "Patroni Odoo Cluster",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "service_health_key",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "md",
+        "footer": {
+          "show": false
+        }
+      },
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "sort",
+                "desc": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "sort": true,
+              "__name__": true
+            },
+            "renameByName": {
+              "service": "Service",
+              "Value": "Current up node",
+              "Value #A": "Current up node",
+              "service_health_key": "Current up node"
+            },
+            "indexByName": {
+              "Service": 0,
+              "Current up node": 1
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Service"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Current up node"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 160
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "202": {
+                        "text": "2/2",
+                        "color": "green"
+                      },
+                      "102": {
+                        "text": "1/2",
+                        "color": "red"
+                      },
+                      "2": {
+                        "text": "0/2",
+                        "color": "red"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "type": "row",
+      "title": "Postgres Odoo Summary",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Live \u2014 Connections",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 37
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(pg_stat_database_numbackends{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\", datname!~\"template0|template1\"})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Backup \u2014 Connections",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 37
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(pg_stat_database_numbackends{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\", datname!~\"template0|template1\"})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Live \u2014 Replica lag (bytes)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 37
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(pg_replica_lag_bytes{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\"})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Backup \u2014 Replica lag (bytes)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 37
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(pg_replica_lag_bytes{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\"})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Live \u2014 TPS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 41
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(pg_stat_database_xact_commit{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\", datname!~\"template0|template1\"}[5m]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Backup \u2014 TPS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 41
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(pg_stat_database_xact_commit{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\", datname!~\"template0|template1\"}[5m]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "Live \u2014 Buffer hit %",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 41
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\", datname!=\"\"}[5m])) / clamp_min(sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\", datname!=\"\"}[5m])) + sum(rate(pg_stat_database_blks_read{job=\"postgres_odoo\", instance=\"192.168.3.245:5000\", datname!=\"\"}[5m])), 1)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "Backup \u2014 Buffer hit %",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 41
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\", datname!=\"\"}[5m])) / clamp_min(sum(rate(pg_stat_database_blks_hit{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\", datname!=\"\"}[5m])) + sum(rate(pg_stat_database_blks_read{job=\"postgres_odoo\", instance=\"192.168.3.240:5000\", datname!=\"\"}[5m])), 1)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value"
+      }
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 42,
+  "tags": [
+    "ccdl",
+    "erp",
+    "overview"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "server",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "label": "Server",
+        "query": "label_values(up{job=\"node\"}, server)",
+        "includeAll": true,
+        "multi": true,
+        "refresh": 1,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        }
+      },
+      {
+        "name": "instance",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "label": "Instance",
+        "query": "label_values(up{job=\"node\", server=~\"$server\"}, instance)",
+        "includeAll": true,
+        "multi": true,
+        "refresh": 1,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        }
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "CCDL ERP Overview",
+  "uid": "ccdl-erp-overview",
+  "version": 207,
+  "weekStart": "",
+  "refresh": "auto"
+}

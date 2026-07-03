@@ -1,0 +1,463 @@
+{{ define "custom.email.html" }}
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body { font-family: Arial, sans-serif; color: #222; line-height: 1.45; }
+      .box { border: 1px solid #ddd; border-radius: 8px; padding: 16px; max-width: 760px; }
+      .firing { background: #ffe7e7; border-left: 6px solid #d93025; }
+      .resolved { background: #e9f7ef; border-left: 6px solid #188038; }
+      h2 { margin: 0 0 12px 0; }
+      h3 { margin: 16px 0 8px 0; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border: 1px solid #eee; padding: 6px 8px; vertical-align: top; text-align: left; }
+      th { background: #fafafa; font-weight: 600; }
+      .muted { color: #666; font-size: 12px; margin-top: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="box {{ if eq .Status "firing" }}firing{{ else }}resolved{{ end }}">
+      {{- $live := .Alerts.Firing -}}
+      {{- if eq .Status "resolved" -}}
+      {{- $live = .Alerts.Resolved -}}
+      {{- end -}}
+      <h2>
+        {{ if eq .Status "firing" }}Alert Firing{{ else }}Alert Resolved{{ end }}:
+      </h2>
+
+      {{- $hasNodeServerDown := false -}}
+      {{- range $live -}}
+      {{- if eq .Labels.alertname "NodeServerDown" -}}{{- $hasNodeServerDown = true -}}{{- end -}}
+      {{- end -}}
+      {{ if $hasNodeServerDown }}
+      <h3>Node Down</h3>
+      <table>
+        <tr>
+          <th>Host</th>
+          <th>Instance</th>
+          <th>Server status</th>
+        </tr>
+        {{ range $live }}
+        {{ if eq .Labels.alertname "NodeServerDown" }}
+        <tr>
+          <td>
+            {{ if .Annotations.host }}
+              {{ .Annotations.host }}
+            {{ else if .Labels.host }}
+              {{ .Labels.host }}
+            {{ else if $.CommonLabels.host }}
+              {{ $.CommonLabels.host }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.instance }}
+              {{ .Annotations.instance }}
+            {{ else if .Labels.instance }}
+              {{ .Labels.instance }}
+            {{ else if $.CommonLabels.instance }}
+              {{ $.CommonLabels.instance }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.server_status }}
+              {{ .Annotations.server_status }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+        </tr>
+        {{ end }}
+        {{ end }}
+      </table>
+      {{ end }}
+
+      {{- $hasNodeDockerDown := false -}}
+      {{- range $live -}}
+      {{- if eq .Labels.alertname "NodeDockerDown" -}}{{- $hasNodeDockerDown = true -}}{{- end -}}
+      {{- end -}}
+      {{ if $hasNodeDockerDown }}
+      <h3>Docker Service Down</h3>
+      <table>
+        <tr>
+          <th>Host</th>
+          <th>Instance</th>
+          <th>Server status</th>
+        </tr>
+        {{ range $live }}
+        {{ if eq .Labels.alertname "NodeDockerDown" }}
+        <tr>
+          <td>
+            {{ if .Annotations.host }}
+              {{ .Annotations.host }}
+            {{ else if .Labels.host }}
+              {{ .Labels.host }}
+            {{ else if $.CommonLabels.host }}
+              {{ $.CommonLabels.host }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.instance }}
+              {{ .Annotations.instance }}
+            {{ else if .Labels.instance }}
+              {{ .Labels.instance }}
+            {{ else if $.CommonLabels.instance }}
+              {{ $.CommonLabels.instance }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.server_status }}
+              {{ .Annotations.server_status }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+        </tr>
+        {{ end }}
+        {{ end }}
+      </table>
+      {{ end }}
+
+      {{- $hasNodeNginxDown := false -}}
+      {{- range $live -}}
+      {{- if eq .Labels.alertname "NodeNginxDown" -}}{{- $hasNodeNginxDown = true -}}{{- end -}}
+      {{- end -}}
+      {{ if $hasNodeNginxDown }}
+      <h3>Nginx Service Down</h3>
+      <table>
+        <tr>
+          <th>Host</th>
+          <th>Instance</th>
+          <th>Server status</th>
+        </tr>
+        {{ range $live }}
+        {{ if eq .Labels.alertname "NodeNginxDown" }}
+        <tr>
+          <td>
+            {{ if .Annotations.host }}
+              {{ .Annotations.host }}
+            {{ else if .Labels.host }}
+              {{ .Labels.host }}
+            {{ else if $.CommonLabels.host }}
+              {{ $.CommonLabels.host }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.instance }}
+              {{ .Annotations.instance }}
+            {{ else if .Labels.instance }}
+              {{ .Labels.instance }}
+            {{ else if $.CommonLabels.instance }}
+              {{ $.CommonLabels.instance }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.server_status }}
+              {{ .Annotations.server_status }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+        </tr>
+        {{ end }}
+        {{ end }}
+      </table>
+      {{ end }}
+
+      {{- $cpuPct := "85" -}}
+      {{- $hasCPU := false -}}
+      {{- range $live -}}
+      {{- if eq .Labels.alertname "NodeHighCPUUsage" -}}
+      {{- $hasCPU = true -}}
+      {{- if .Annotations.percentage_threshold }}{{ $cpuPct = .Annotations.percentage_threshold }}{{ end -}}
+      {{- end -}}
+      {{- end -}}
+      {{ if $hasCPU }}
+      <h3>High CPU Usage (&gt; {{ $cpuPct }}%)</h3>
+      <table>
+        <tr>
+          <th>Host</th>
+          <th>Instance</th>
+          <th>CPU usage</th>
+        </tr>
+        {{ range $live }}
+        {{ if eq .Labels.alertname "NodeHighCPUUsage" }}
+        <tr>
+          <td>
+            {{ if .Annotations.host }}
+              {{ .Annotations.host }}
+            {{ else if .Labels.host }}
+              {{ .Labels.host }}
+            {{ else if $.CommonLabels.host }}
+              {{ $.CommonLabels.host }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.instance }}
+              {{ .Annotations.instance }}
+            {{ else if .Labels.instance }}
+              {{ .Labels.instance }}
+            {{ else if $.CommonLabels.instance }}
+              {{ $.CommonLabels.instance }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.cpu_usage }}
+              {{ .Annotations.cpu_usage }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+        </tr>
+        {{ end }}
+        {{ end }}
+      </table>
+      {{ end }}
+
+      {{- $memPct := "85" -}}
+      {{- $hasMemory := false -}}
+      {{- range $live -}}
+      {{- if eq .Labels.alertname "NodeHighMemoryUsage" -}}
+      {{- $hasMemory = true -}}
+      {{- if .Annotations.percentage_threshold }}{{ $memPct = .Annotations.percentage_threshold }}{{ end -}}
+      {{- end -}}
+      {{- end -}}
+      {{ if $hasMemory }}
+      <h3>High Memory Usage (&gt; {{ $memPct }}%)</h3>
+      <table>
+        <tr>
+          <th>Host</th>
+          <th>Instance</th>
+          <th>Memory usage</th>
+        </tr>
+        {{ range $live }}
+        {{ if eq .Labels.alertname "NodeHighMemoryUsage" }}
+        <tr>
+          <td>
+            {{ if .Annotations.host }}
+              {{ .Annotations.host }}
+            {{ else if .Labels.host }}
+              {{ .Labels.host }}
+            {{ else if $.CommonLabels.host }}
+              {{ $.CommonLabels.host }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.instance }}
+              {{ .Annotations.instance }}
+            {{ else if .Labels.instance }}
+              {{ .Labels.instance }}
+            {{ else if $.CommonLabels.instance }}
+              {{ $.CommonLabels.instance }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.memory_usage }}
+              {{ .Annotations.memory_usage }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+        </tr>
+        {{ end }}
+        {{ end }}
+      </table>
+      {{ end }}
+
+      {{- $diskPct := "80" -}}
+      {{- $hasDisk := false -}}
+      {{- range $live -}}
+      {{- if eq .Labels.alertname "NodeHighDiskUsage" -}}
+      {{- $hasDisk = true -}}
+      {{- if .Annotations.percentage_threshold }}{{ $diskPct = .Annotations.percentage_threshold }}{{ end -}}
+      {{- end -}}
+      {{- end -}}
+      {{ if $hasDisk }}
+      <h3>High Disk Usage (&gt; {{ $diskPct }}%)</h3>
+      <table>
+        <tr>
+          <th>Host</th>
+          <th>Instance</th>
+          <th>Disk usage</th>
+        </tr>
+        {{ range $live }}
+        {{ if eq .Labels.alertname "NodeHighDiskUsage" }}
+        <tr>
+          <td>
+            {{ if .Annotations.host }}
+              {{ .Annotations.host }}
+            {{ else if .Labels.host }}
+              {{ .Labels.host }}
+            {{ else if $.CommonLabels.host }}
+              {{ $.CommonLabels.host }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.instance }}
+              {{ .Annotations.instance }}
+            {{ else if .Labels.instance }}
+              {{ .Labels.instance }}
+            {{ else if $.CommonLabels.instance }}
+              {{ $.CommonLabels.instance }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.disk_usage }}
+              {{ .Annotations.disk_usage }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+        </tr>
+        {{ end }}
+        {{ end }}
+      </table>
+      {{ end }}
+
+      {{- $hasReplicaLag := false -}}
+      {{- range $live -}}
+      {{- $isReplicaLagAlert := false -}}
+      {{- if or (eq .Labels.alertname "PatroniReplicaLagHigh") (match ".*ReplicaLag.*" .Labels.alertname) -}}
+      {{- $isReplicaLagAlert = true -}}
+      {{- end -}}
+      {{- if $isReplicaLagAlert -}}
+      {{- $lagRaw := "" -}}
+      {{- if .Annotations.lag_mb -}}
+      {{- $lagRaw = .Annotations.lag_mb -}}
+      {{- else if .Annotations.replica_lag_mb -}}
+      {{- $lagRaw = .Annotations.replica_lag_mb -}}
+      {{- else if .Labels.lag_mb -}}
+      {{- $lagRaw = .Labels.lag_mb -}}
+      {{- else if .Annotations.value -}}
+      {{- $lagRaw = .Annotations.value -}}
+      {{- end -}}
+      {{- $lagNum := reReplaceAll "[^0-9.]" $lagRaw "" -}}
+      {{- if match "^(100|[1-9][0-9]{2,})(\\.[0-9]+)?$" $lagNum -}}
+      {{- $hasReplicaLag = true -}}
+      {{- end -}}
+      {{- end -}}
+      {{- end -}}
+      {{ if $hasReplicaLag }}
+      <h3>Database Replica lag</h3>
+      <table>
+        <tr>
+          <th>Stack</th>
+          <th>Node</th>
+          <th>Lag (MB)</th>
+        </tr>
+        {{ range $live }}
+        {{- $isReplicaLagAlert := false -}}
+        {{- if or (eq .Labels.alertname "PatroniReplicaLagHigh") (match ".*ReplicaLag.*" .Labels.alertname) -}}
+        {{- $isReplicaLagAlert = true -}}
+        {{- end -}}
+        {{- if $isReplicaLagAlert -}}
+        {{- $lagRaw := "" -}}
+        {{- if .Annotations.lag_mb -}}
+        {{- $lagRaw = .Annotations.lag_mb -}}
+        {{- else if .Annotations.replica_lag_mb -}}
+        {{- $lagRaw = .Annotations.replica_lag_mb -}}
+        {{- else if .Labels.lag_mb -}}
+        {{- $lagRaw = .Labels.lag_mb -}}
+        {{- else if .Annotations.value -}}
+        {{- $lagRaw = .Annotations.value -}}
+        {{- end -}}
+        {{- $lagNum := reReplaceAll "[^0-9.]" $lagRaw "" -}}
+        {{- if match "^(100|[1-9][0-9]{2,})(\\.[0-9]+)?$" $lagNum }}
+        <tr>
+          <td>
+            {{ if .Labels.stack }}
+              {{ .Labels.stack }}
+            {{ else if match ".*django.*" .Labels.job }}
+              django
+            {{ else if match ".*odoo.*" .Labels.job }}
+              odoo
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.node }}
+              {{ .Annotations.node }}
+            {{ else if .Labels.name }}
+              {{ .Labels.name }}
+            {{ else if .Annotations.instance }}
+              {{ .Annotations.instance }}
+            {{ else if .Labels.instance }}
+              {{ .Labels.instance }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>{{ $lagNum }}MB</td>
+        </tr>
+        {{- end -}}
+        {{- end -}}
+        {{ end }}
+      </table>
+      {{ end }}
+
+      {{- $hasServicesTable := false -}}
+      {{- range $live -}}
+      {{- if eq .Labels.alertname "ServiceRunningNodesLow" -}}
+      {{- $hasServicesTable = true -}}
+      {{- end -}}
+      {{- end -}}
+      {{ if $hasServicesTable }}
+      <h3>Services</h3>
+      <table>
+        <tr>
+          <th>Service</th>
+          <th>Total Running</th>
+        </tr>
+        {{ range $live }}
+        {{ if eq .Labels.alertname "ServiceRunningNodesLow" }}
+        <tr>
+          <td>
+            {{ if .Labels.other_service }}
+              {{ .Labels.other_service }}
+            {{ else if .Labels.stack }}
+              {{ .Labels.stack }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+          <td>
+            {{ if .Annotations.running_nodes }}
+              {{ .Annotations.running_nodes }}
+            {{ else }}
+              N/A
+            {{ end }}
+          </td>
+        </tr>
+        {{ end }}
+        {{ end }}
+      </table>
+      {{ end }}
+    </div>
+  </body>
+</html>
+{{ end }}

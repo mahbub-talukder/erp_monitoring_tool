@@ -1,0 +1,14 @@
+/*
+ * Keep "Server health internal" visible in breadcrumbs but prevent navigation
+ * into the provisioned folder (users often get lost in the empty folder view).
+ */
+a[title="Server health internal"] {
+  pointer-events: none !important;
+  cursor: default !important;
+  text-decoration: none !important;
+}
+
+a[title="Server health internal"]:hover,
+a[title="Server health internal"]:focus {
+  text-decoration: none !important;
+}

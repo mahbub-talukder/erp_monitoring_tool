@@ -1,0 +1,16 @@
+apiVersion: 1
+
+providers:
+  - name: root-dashboards
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/json
+  - name: server-health-internal
+    folder: Server health internal
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/server_health/internal
