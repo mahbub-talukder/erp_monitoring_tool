@@ -212,6 +212,18 @@
               "RAM (lastNotNull)": "RAM",
               "Disk usage (lastNotNull)": "Disk usage",
               "Uptime (lastNotNull)": "Uptime"
+            },
+            "indexByName": {
+              "Server": 0,
+              "Host": 1,
+              "Instance": 2,
+              "Server Alive": 3,
+              "Docker": 4,
+              "Nginx": 5,
+              "CPU": 6,
+              "RAM": 7,
+              "Disk usage": 8,
+              "Uptime": 9
             }
           }
         }
@@ -1330,6 +1342,6 @@
   "title": "CCDL ERP Overview",
   "uid": "ccdl-erp-overview",
   "version": 1,
-  "refresh": "30s",
+  "refresh": "auto",
   "description": "CCDL ERP infrastructure overview: server health, Odoo traffic, and Patroni PostgreSQL cluster."
 }
