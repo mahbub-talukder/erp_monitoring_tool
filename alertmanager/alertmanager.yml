@@ -26,7 +26,7 @@ receivers:
 
   - name: recipents-email
     email_configs:
-      - to: 'saif.ahmed@cg-bd.com,mahbub.alum@cg-bd.com,hasin.arman@cg-bd.com'
+      - to: 'mim.jannat@cg-bd.com,sohaib.islam@cg-bd.com,abdullah@cg-bd.com,so.rahman@cg-bd.com,mahbub.alum@cg-bd.com,faiz.shiraji@cg-bd.com'
         send_resolved: true
         headers:
           Subject: '[{{ .Status | toUpper }}] CCDL ERP health ({{ if eq .Status "firing" }}{{ len (.Alerts.Firing) }}{{ else }}{{ len (.Alerts.Resolved) }}{{ end }} alert(s))'

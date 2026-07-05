@@ -598,8 +598,8 @@
     {
       "id": 24,
       "type": "stat",
-      "title": "Active DB Connections (Live + Backup)",
-      "description": "Sum of active Postgres connections on CCDL Live Server 1 and CCDL Backup Server (excludes template0/template1)",
+      "title": "Active DB Connections",
+      "description": "Active Postgres connections per server (excludes template0/template1)",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
@@ -613,8 +613,8 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(pg_stat_database_numbackends{job=\"postgres_odoo\", datname!~\"template0|template1\", server=~\"live|backup\"})",
-          "legendFormat": "connections",
+          "expr": "sum by (server) (pg_stat_database_numbackends{job=\"postgres_odoo\", datname!~\"template0|template1\", server=~\"live|backup\"})",
+          "legendFormat": "{{server}}",
           "range": true
         }
       ],
@@ -655,7 +655,7 @@
           "values": false
         },
         "orientation": "auto",
-        "textMode": "value",
+        "textMode": "value_and_name",
         "colorMode": "background",
         "graphMode": "area"
       }
