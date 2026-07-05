@@ -54,11 +54,11 @@ scrape_configs:
     static_configs:
       - targets: ['postgres-exporter-odoo-live:9191']
         labels:
-          instance: 10.10.21.5:5000
+          instance: 10.10.21.5:5432
           server: live
           host: ccdl-live-server-1
       - targets: ['postgres-exporter-odoo-backup:9192']
         labels:
-          instance: 10.10.21.6:5000
+          instance: 10.10.21.6:5432
           server: backup
           host: ccdl-backup-server
