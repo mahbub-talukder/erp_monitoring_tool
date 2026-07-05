@@ -82,6 +82,12 @@
           "expr": "node_time_seconds{job=\"node\", server=~\"$server\", instance=~\"$instance\"} - node_boot_time_seconds{job=\"node\", server=~\"$server\", instance=~\"$instance\"}",
           "format": "table",
           "instant": true
+        },
+        {
+          "refId": "G",
+          "expr": "max by (server,host,instance) (node_systemd_unit_state{job=\"node\", server=~\"$server\", instance=~\"$instance\", name=\"nginx.service\", state=\"active\"}) or max by (server,host,instance) ((up{job=\"node\", server=~\"$server\", instance=~\"$instance\"} * 0) - 1)",
+          "format": "table",
+          "instant": true
         }
       ],
       "options": {
@@ -114,6 +120,7 @@
               "instance": "Instance",
               "Value #A": "Server Alive",
               "Value #B": "Docker",
+              "Value #G": "Nginx",
               "Value #C": "CPU",
               "Value #D": "RAM",
               "Value #E": "Disk usage",
@@ -125,10 +132,11 @@
               "Instance": 2,
               "Server Alive": 3,
               "Docker": 4,
-              "CPU": 5,
-              "RAM": 6,
-              "Disk usage": 7,
-              "Uptime": 8
+              "Nginx": 5,
+              "CPU": 6,
+              "RAM": 7,
+              "Disk usage": 8,
+              "Uptime": 9
             }
           }
         },
@@ -152,6 +160,12 @@
                 ]
               },
               "Docker": {
+                "operation": "aggregate",
+                "aggregations": [
+                  "lastNotNull"
+                ]
+              },
+              "Nginx": {
                 "operation": "aggregate",
                 "aggregations": [
                   "lastNotNull"
@@ -193,6 +207,7 @@
             "renameByName": {
               "Server Alive (lastNotNull)": "Server Alive",
               "Docker (lastNotNull)": "Docker",
+              "Nginx (lastNotNull)": "Nginx",
               "CPU (lastNotNull)": "CPU",
               "RAM (lastNotNull)": "RAM",
               "Disk usage (lastNotNull)": "Disk usage",
@@ -303,6 +318,66 @@
             "matcher": {
               "id": "byName",
               "options": "Docker"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 115
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "-1": {
+                        "text": "N/A",
+                        "color": "gray"
+                      },
+                      "0": {
+                        "text": "Inactive",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Active",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": -1.0,
+                      "color": "gray"
+                    },
+                    {
+                      "value": 0.0,
+                      "color": "red"
+                    },
+                    {
+                      "value": 1.0,
+                      "color": "green"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nginx"
             },
             "properties": [
               {
